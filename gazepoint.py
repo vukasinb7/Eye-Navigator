@@ -12,7 +12,6 @@ class GazePoint:
     def __init__(self, ip, port, screen_width, screen_height, initial_page):
         self.address = (ip, port)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(1)
         self.socket.connect(self.address)
 
         self.driver = webdriver.Chrome()
