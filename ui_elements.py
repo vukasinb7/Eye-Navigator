@@ -82,9 +82,7 @@ class UIElements:
         document.getElementsByTagName('head')[0].appendChild(style);
         """)
 
-
-
-    # Add keyframes animation styles in JavaScript
+        # Add keyframes animation styles in JavaScript
         self.driver.execute_script("""
         var style = document.createElement('style');
         style.type = 'text/css';
