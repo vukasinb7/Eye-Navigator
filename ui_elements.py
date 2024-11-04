@@ -1,6 +1,37 @@
+from selenium.webdriver.common.by import By
+
+
 class UIElements:
     def __init__(self, driver):
         self.driver = driver
+        self.elements_lookup_range = 150
+        self.clickable_elements = self.driver.find_elements(By.XPATH,
+                                                            "//a | //button | //input[@type='button' or @type='submit']")
+
+    def get_elements_near_point(self, x, y):
+        elements_in_range = []
+        for element in self.clickable_elements:
+            try:
+                # Get the element's position
+                loc = element.location
+                size = element.size
+
+                # Check if the element is within the desired range around (x, y)
+                if (x - self.elements_lookup_range <= loc['x'] <= x + self.elements_lookup_range and
+                        y - self.elements_lookup_range <= loc['y'] <= y + self.elements_lookup_range):
+                    elements_in_range.append(element)
+            except Exception as e:
+                print(f"Error with element: {e}")
+
+        # Add a border around each element
+        for element in elements_in_range:
+            self.driver.execute_script("arguments[0].style.border='2px solid red'", element)
+
+        # Optionally, print details of the elements
+        for element in elements_in_range:
+            print("Found clickable element:", element.tag_name, element.get_attribute("class"), element.text)
+
+        return elements_in_range
 
     def add_scroll_arrow(self):
         script = """
