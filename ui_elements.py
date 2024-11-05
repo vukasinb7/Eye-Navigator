@@ -1,37 +1,47 @@
-from selenium.webdriver.common.by import By
-
-
 class UIElements:
-    def __init__(self, driver):
+    def __init__(self, driver,click_threshold):
         self.driver = driver
-        self.elements_lookup_range = 150
-        self.clickable_elements = self.driver.find_elements(By.XPATH,
-                                                            "//a | //button | //input[@type='button' or @type='submit']")
+        self.click_threshold=click_threshold
 
-    def get_elements_near_point(self, x, y):
-        elements_in_range = []
-        for element in self.clickable_elements:
-            try:
-                # Get the element's position
-                loc = element.location
-                size = element.size
+    def get_closest_element_near_point(self, x, y):
+        js_script = """
+            const elements = Array.from(document.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
+            const range = arguments[2];
+            const x = arguments[0];
+            const y = arguments[1];
 
-                # Check if the element is within the desired range around (x, y)
-                if (x - self.elements_lookup_range <= loc['x'] <= x + self.elements_lookup_range and
-                        y - self.elements_lookup_range <= loc['y'] <= y + self.elements_lookup_range):
-                    elements_in_range.append(element)
-            except Exception as e:
-                print(f"Error with element: {e}")
+            function getDistanceToPoint(rect, x, y) {
+                const centerX = (rect.left + rect.right) / 2;
+                const centerY = (rect.top + rect.bottom) / 2;
+                return Math.sqrt((centerX - x) ** 2 + (centerY - y) ** 2);
+            }
 
-        # Add a border around each element
-        for element in elements_in_range:
-            self.driver.execute_script("arguments[0].style.border='2px solid red'", element)
+            let closestElement = null;
+            let minDistance = Infinity;
 
-        # Optionally, print details of the elements
-        for element in elements_in_range:
-            print("Found clickable element:", element.tag_name, element.get_attribute("class"), element.text)
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (
+                    rect.left <= x + range &&
+                    rect.right >= x - range &&
+                    rect.top <= y + range &&
+                    rect.bottom >= y - range
+                ) {
+                    const distance = getDistanceToPoint(rect, x, y);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestElement = el;
+                    }
+                }
+            });
+            
+            return closestElement;
+        """
 
-        return elements_in_range
+        closest_element = self.driver.execute_script(js_script, x, y, self.click_threshold)
+
+
+        return closest_element
 
     def add_scroll_arrow(self):
         script = """
@@ -145,7 +155,29 @@ class UIElements:
         self.driver.execute_script(position_script[direction])
 
     def show_scroll_arrow(self):
-        self.driver.execute_script("document.querySelector('.custom-scroll-ui-container').style.display = 'block';")
+        js_script = """
+            const element = document.querySelector('.custom-scroll-ui-container');
+            if (element) {
+                element.style.display = 'block';
+            } else {
+                console.log('Element not found when trying to show scroll arrow.');
+            }
+        """
+        self.driver.execute_script(js_script)
 
     def hide_scroll_arrow(self):
-        self.driver.execute_script("document.querySelector('.custom-scroll-ui-container').style.display = 'none';")
+        js_script = """
+            const element = document.querySelector('.custom-scroll-ui-container');
+            if (element) {
+                element.style.display = 'none';
+            } else {
+                console.log('Element not found when trying to hide scroll arrow.');
+            }
+        """
+        self.driver.execute_script(js_script)
+
+    def toggle_border(self, state,element):
+        try:
+            self.driver.execute_script(f"arguments[0].style.border = '{2 if state else 0}px solid red';", element)
+        except:
+            pass
