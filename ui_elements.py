@@ -1,9 +1,9 @@
 class UIElements:
-    def __init__(self, driver,click_threshold):
+    def __init__(self, driver, click_threshold):
         self.driver = driver
-        self.click_threshold=click_threshold
+        self.click_threshold = click_threshold
 
-    def get_closest_element_near_point(self, x, y):
+    def get_closest_element_to_point(self, x, y):
         js_script = """
             const elements = Array.from(document.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
             const range = arguments[2];
@@ -40,143 +40,175 @@ class UIElements:
 
         closest_element = self.driver.execute_script(js_script, x, y, self.click_threshold)
 
-
         return closest_element
 
-    def add_scroll_arrow(self):
+    def add_overlay(self):
         script = """
-        // MAIN CONTAINER CHEVRONS
-        var container = document.createElement('div');
-        container.className = 'custom-scroll-ui-container';
-        container.style.position = 'fixed';
-        container.style.left = '0';
-        container.style.bottom = '0';
-        container.style.width = '100%';
-        container.style.height = '200px'; 
-        container.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        container.style.zIndex = '10000000000000';
-        container.style.display = 'flex';
-        container.style.justifyContent = 'space-between';
-        container.style.alignItems = 'center';
-        document.body.appendChild(container);
+        function createContainer() {
+            var container = document.createElement('div');
+            container.className = 'gaze-overlay-ui-container';
+            container.style.position = 'fixed';
+            container.style.left = '0';
+            container.style.top = '0%';
+            container.style.width = '100px';
+            container.style.height = '100%';
+            container.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+            container.style.zIndex = '100000000'; // Lower z-index for the container
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.justifyContent = 'space-between';
+            container.style.alignItems = 'center';
+            document.body.appendChild(container);
+            return container;
+        }
 
-        // CHEVRON TRACKS
-        const positions = ['20%', '50%', '80%'];
+        function createArrowButton(direction) {
+            var arrow = document.createElement('div');
+            arrow.className = 'scroll-arrow-' + direction;
+            arrow.style.width = '50px';
+            arrow.style.height = '50px';
+            arrow.style.margin = '10px';
+            arrow.style.backgroundColor = 'rgba(44, 62, 80, 0.8)';
+            arrow.style.cursor = 'pointer';
+            arrow.style.display = 'flex';
+            arrow.style.alignItems = 'center';
+            arrow.style.justifyContent = 'center';
+            arrow.style.color = 'white';
+            arrow.innerHTML = direction === 'up' ? '▲' : direction === 'down' ? '▼' : direction === 'left' ? '◀' : '▶';
 
-        positions.forEach((position) => {
-            var chevronContainer = document.createElement('div');
-            chevronContainer.className = 'chevron-container';
-            chevronContainer.style.position = 'absolute';
-            chevronContainer.style.left = position;
-            chevronContainer.style.bottom = '75%';
-            chevronContainer.style.transform = 'translate(-50%, 0%)';
+            var scrollInterval;
+            var scrollSpeed = 10;
+            var maxScrollSpeed = 150;
+            var acceleration = 5;
+            var hoverTime = 0;
+            var scrollDelayTimeout;
 
-            // CHEVRON
-            for (let i = 0; i < 3; i++) {
-                var chevron = document.createElement('div');
-                chevron.className = 'chevron';
-                chevron.style.position = 'absolute';
-                chevron.style.width = '2.8rem';
-                chevron.style.height = '0.64rem';
-                chevron.style.opacity = '0';
-                chevron.style.transform = 'scale(0.3)';
-                chevron.style.animation = `move-chevron 2s ease-out ${i * 0.5}s infinite`;
+            function startScrolling() {
+                scrollInterval = setInterval(function() {
+                    var scrollAmountX = direction === 'left' ? -scrollSpeed : direction === 'right' ? scrollSpeed : 0;
+                    var scrollAmountY = direction === 'up' ? -scrollSpeed : direction === 'down' ? scrollSpeed : 0;
+                    window.scrollBy(scrollAmountX, scrollAmountY);
 
-                var before = document.createElement('div');
-                before.style.position = 'absolute';
-                before.style.top = '0';
-                before.style.height = '100%';
-                before.style.width = '50%';
-                before.style.left = '0';
-                before.style.background = '#2c3e50';
-                before.style.transform = 'skewY(30deg)';
-
-                var after = document.createElement('div');
-                after.style.position = 'absolute';
-                after.style.top = '0';
-                after.style.height = '100%';
-                after.style.width = '50%';
-                after.style.right = '0';
-                after.style.background = '#2c3e50';
-                after.style.transform = 'skewY(-30deg)';
-
-                chevron.appendChild(before);
-                chevron.appendChild(after);
-
-                chevronContainer.appendChild(chevron);
+                    hoverTime += 50;
+                    if (hoverTime > 2000) {
+                        if (scrollSpeed < maxScrollSpeed) {
+                            scrollSpeed += acceleration;
+                        }
+                    }
+                }, 50);
             }
-            container.appendChild(chevronContainer);
-        });
+
+            arrow.addEventListener('mouseenter', function() {
+                hoverTime = 0;
+                scrollSpeed = 10;
+                scrollDelayTimeout = setTimeout(function() {
+                    startScrolling();
+                }, 1000);
+            });
+
+            arrow.addEventListener('mouseleave', function() {
+                clearTimeout(scrollDelayTimeout);
+                clearInterval(scrollInterval);
+                hoverTime = 0;
+                scrollSpeed = 10;
+            });
+
+            return arrow;
+        }
+
+        function createButton(type, icon, action) {
+            var button = document.createElement('div');
+            button.className = type + '-button';
+            button.style.width = '50px';
+            button.style.height = '50px';
+            button.style.margin = '10px';
+            button.style.backgroundColor = 'rgba(44, 62, 80, 0.8)';
+            button.style.cursor = 'pointer';
+            button.style.display = 'flex';
+            button.style.alignItems = 'center';
+            button.style.justifyContent = 'center';
+            button.style.color = 'white';
+            button.style.position = 'relative';
+            button.innerHTML = icon;
+
+            var loadingFill = document.createElement('div');
+            loadingFill.className = 'loading-fill';
+            loadingFill.style.position = 'absolute';
+            loadingFill.style.bottom = '0';
+            loadingFill.style.left = '0';
+            loadingFill.style.width = '100%';
+            loadingFill.style.height = '0%';
+            loadingFill.style.backgroundColor = 'rgba(0, 128, 0, 0.5)';
+            loadingFill.style.transition = 'height 3s linear';
+            button.appendChild(loadingFill);
+
+            var timeout;
+            var resetTransition = function() {
+                loadingFill.style.transition = 'none';
+                loadingFill.style.height = '0%';
+                setTimeout(function() {
+                    loadingFill.style.transition = 'height 3s linear';
+                }, 50);
+            };
+
+            button.addEventListener('mouseenter', function() {
+                loadingFill.style.height = '100%';
+                timeout = setTimeout(function() {
+                    loadingFill.style.height = '0%';
+                    action();
+                    resetTransition();
+                }, 3000);
+            });
+
+            button.addEventListener('mouseleave', function() {
+                clearTimeout(timeout);
+                resetTransition();
+            });
+
+            return button;
+        }
+
+        function createToggleButton() {
+            var toggleButton = createButton('toggle', '&#9776;', function() {
+                var container = document.querySelector('.gaze-overlay-ui-container');
+                var isHidden = container.style.display === 'none';
+
+                toggleButton.style.left = isHidden ? '110px' : '0px';
+                container.style.display = isHidden ? 'flex' : 'none';
+            });
+
+            toggleButton.style.position = 'fixed';
+            toggleButton.style.top = '10px';
+            toggleButton.style.left = '110px';
+            toggleButton.style.zIndex = '100000001';
+            return toggleButton;
+        }
+
+        var container = createContainer();
+
+        container.appendChild(createArrowButton('up'));
+        container.appendChild(createArrowButton('left'));
+        container.appendChild(createArrowButton('right'));
+        container.appendChild(createArrowButton('down'));
+
+        container.appendChild(createButton('back', '←', function() {
+            window.history.back();
+        }));
+
+        container.appendChild(createButton('forward', '→', function() {
+            window.history.forward();
+        }));
+
+        container.appendChild(createButton('refresh', '🔄', function() {
+            location.reload();
+        }));
+
+        document.body.appendChild(createToggleButton());
         """
+
         self.driver.execute_script(script)
 
-        self.driver.execute_script("""
-        var style = document.createElement('style');
-        style.type = 'text/css';
-        style.innerHTML = `
-        @keyframes move-chevron {
-            25% { opacity: 1; }
-            33.3% { opacity: 1; transform: translateY(3.04rem); }
-            66.6% { opacity: 1; transform: translateY(4.16rem); }
-            100% { opacity: 0; transform: translateY(6.4rem) scale(0.5); }
-        }`;
-        document.getElementsByTagName('head')[0].appendChild(style);
-        """)
-
-        # Add keyframes animation styles in JavaScript
-        self.driver.execute_script("""
-        var style = document.createElement('style');
-        style.type = 'text/css';
-        style.innerHTML = `
-        @keyframes move-chevron {
-            25% { opacity: 1; }
-            33.3% { opacity: 1; transform: translateY(3.04rem); }
-            66.6% { opacity: 1; transform: translateY(4.16rem); }
-            100% { opacity: 0; transform: translateY(6.4rem) scale(0.5); }
-        }`;
-        document.getElementsByTagName('head')[0].appendChild(style);
-        """)
-
-    def update_scroll_arrow_position(self, direction):
-        position_script = {
-            'up': "document.querySelector('.custom-scroll-ui-container').style.top = '10%'; "
-                  "document.querySelector('.custom-scroll-ui-container').style.left = '50%'; "
-                  "document.querySelector('.custom-scroll-ui-container').style.transform = 'translate(-50%, -50%) rotate(180deg)';",
-            'down': "document.querySelector('.custom-scroll-ui-container').style.top = '90%'; "
-                    "document.querySelector('.custom-scroll-ui-container').style.left = '50%'; "
-                    "document.querySelector('.custom-scroll-ui-container').style.transform = 'translate(-50%, -50%) rotate(0deg)';",
-            'left': "document.querySelector('.custom-scroll-ui-container').style.left = '5%'; "
-                    "document.querySelector('.custom-scroll-ui-container').style.top = '50%'; "
-                    "document.querySelector('.custom-scroll-ui-container').style.transform = 'translate(-50%, -50%) rotate(90deg)';",
-            'right': "document.querySelector('.custom-scroll-ui-container').style.left = '95%'; "
-                     "document.querySelector('.custom-scroll-ui-container').style.top = '50%'; "
-                     "document.querySelector('.custom-scroll-ui-container').style.transform = 'translate(-50%, -50%) rotate(-90deg)';"
-        }
-        self.driver.execute_script(position_script[direction])
-
-    def show_scroll_arrow(self):
-        js_script = """
-            const element = document.querySelector('.custom-scroll-ui-container');
-            if (element) {
-                element.style.display = 'block';
-            } else {
-                console.log('Element not found when trying to show scroll arrow.');
-            }
-        """
-        self.driver.execute_script(js_script)
-
-    def hide_scroll_arrow(self):
-        js_script = """
-            const element = document.querySelector('.custom-scroll-ui-container');
-            if (element) {
-                element.style.display = 'none';
-            } else {
-                console.log('Element not found when trying to hide scroll arrow.');
-            }
-        """
-        self.driver.execute_script(js_script)
-
-    def toggle_border(self, state,element):
+    def toggle_border(self, state, element):
         try:
             self.driver.execute_script(f"arguments[0].style.border = '{2 if state else 0}px solid red';", element)
         except:
