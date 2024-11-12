@@ -31,14 +31,14 @@ class GazePoint:
         self.click_element = None
         self.click_start_time = None
 
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
-        chrome_options.add_argument("--start-fullscreen")
-        self.driver = webdriver.Chrome(options=chrome_options)
-        # edge_options = webdriver.EdgeOptions()
-        # edge_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
-        # edge_options.add_argument("--start-fullscreen")
-        # self.driver = webdriver.Edge(options=edge_options)
+        # chrome_options = webdriver.ChromeOptions()
+        # chrome_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
+        # chrome_options.add_argument("--start-fullscreen")
+        # self.driver = webdriver.Chrome(options=chrome_options)
+        edge_options = webdriver.EdgeOptions()
+        edge_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
+        edge_options.add_argument("--start-fullscreen")
+        self.driver = webdriver.Edge(options=edge_options)
         self.driver.get(initial_page)
 
         self.ui_elements = UIElements(self.driver, self.click_threshold)
@@ -94,7 +94,7 @@ class GazePoint:
                 return False
 
         with keyboard.Listener(on_release=on_release) as listener:
-            self.ui_elements.add_overlay()
+            self.ui_elements.load_ui_scripts()
             while listener.running:
                 # rxdat = self.socket.recv(1024).decode()
 
@@ -118,8 +118,8 @@ class GazePoint:
                     continue
 
     def click_detection(self, record):
-        closest_element = self.ui_elements.get_closest_element_to_point(record.x * self.screen_width,
-                                                                        record.y * self.screen_height)
+        closest_element = self.ui_elements.get_closest_element(record.x * self.screen_width,
+                                                               record.y * self.screen_height)
 
         if closest_element:
             if closest_element == self.click_element and (record.time - self.click_start_time >= self.click_delay):
