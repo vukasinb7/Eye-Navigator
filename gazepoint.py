@@ -119,6 +119,7 @@ class GazePoint:
                 try:
                     closest_element.click()
                     self.ui_elements.load_ui_scripts()
+                    self.ui_elements.toggle_border(False, closest_element)
                 except:
                     pass
 
