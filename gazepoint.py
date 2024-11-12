@@ -125,7 +125,8 @@ class GazePoint:
             if closest_element == self.click_element and (record.time - self.click_start_time >= self.click_delay):
                 try:
                     closest_element.click()
-                    self.ui_elements.add_overlay()
+                    self.ui_elements.toggle_border(False, closest_element)
+                    self.ui_elements.load_ui_scripts()
                 except:
                     pass
 
