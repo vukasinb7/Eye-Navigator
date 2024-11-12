@@ -1,4 +1,4 @@
-function createContainer() {
+function createOverlayContainer() {
     var container = document.createElement('div');
     container.className = 'gaze-overlay-ui-container';
     container.style.position = 'fixed';
@@ -16,7 +16,7 @@ function createContainer() {
     return container;
 }
 
-function createArrowButton(direction) {
+function createNavigationArrowButton(direction) {
     var arrow = document.createElement('div');
     arrow.className = 'scroll-arrow-' + direction;
     arrow.style.width = '50px';
@@ -70,7 +70,7 @@ function createArrowButton(direction) {
     return arrow;
 }
 
-function createButton(type, icon, action) {
+function createLoadableButton(type, icon, action) {
     var button = document.createElement('div');
     button.className = type + '-button';
     button.style.width = '50px';
@@ -122,8 +122,8 @@ function createButton(type, icon, action) {
     return button;
 }
 
-function createToggleButton() {
-    var toggleButton = createButton('toggle', '&#9776;', function () {
+function createOverlayToggleButton() {
+    var toggleButton = createLoadableButton('toggle', '&#9776;', function () {
         var container = document.querySelector('.gaze-overlay-ui-container');
         var isHidden = container.style.display === 'none';
 
@@ -138,23 +138,23 @@ function createToggleButton() {
     return toggleButton;
 }
 
-var container = createContainer();
+var container = createOverlayContainer();
 
-container.appendChild(createArrowButton('up'));
-container.appendChild(createArrowButton('left'));
-container.appendChild(createArrowButton('right'));
-container.appendChild(createArrowButton('down'));
+container.appendChild(createNavigationArrowButton('up'));
+container.appendChild(createNavigationArrowButton('left'));
+container.appendChild(createNavigationArrowButton('right'));
+container.appendChild(createNavigationArrowButton('down'));
 
-container.appendChild(createButton('back', '←', function () {
+container.appendChild(createLoadableButton('back', '←', function () {
     window.history.back();
 }));
 
-container.appendChild(createButton('forward', '→', function () {
+container.appendChild(createLoadableButton('forward', '→', function () {
     window.history.forward();
 }));
 
-container.appendChild(createButton('refresh', '🔄', function () {
+container.appendChild(createLoadableButton('refresh', '🔄', function () {
     location.reload();
 }));
 
-document.body.appendChild(createToggleButton());
+document.body.appendChild(createOverlayToggleButton());

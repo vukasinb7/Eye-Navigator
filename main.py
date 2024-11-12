@@ -11,6 +11,6 @@ if __name__ == '__main__':
 
     # Eye Navigator
     g = GazePoint(ip, port, width, height, initial_page="https://benchmark.rs/")
-    # g.calibrate()
+    g.calibrate()
     g.control()
-    # g.disconnect()
+    g.disconnect()

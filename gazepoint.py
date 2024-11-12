@@ -13,9 +13,9 @@ from ui_elements import UIElements
 
 class GazePoint:
     def __init__(self, ip, port, screen_width, screen_height, initial_page):
-        # self.address = (ip, port)
-        # self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # self.socket.connect(self.address)
+        self.address = (ip, port)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect(self.address)
 
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -31,14 +31,14 @@ class GazePoint:
         self.click_element = None
         self.click_start_time = None
 
-        # chrome_options = webdriver.ChromeOptions()
-        # chrome_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
-        # chrome_options.add_argument("--start-fullscreen")
-        # self.driver = webdriver.Chrome(options=chrome_options)
-        edge_options = webdriver.EdgeOptions()
-        edge_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
-        edge_options.add_argument("--start-fullscreen")
-        self.driver = webdriver.Edge(options=edge_options)
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
+        chrome_options.add_argument("--start-fullscreen")
+        self.driver = webdriver.Chrome(options=chrome_options)
+        # edge_options = webdriver.EdgeOptions()
+        # edge_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
+        # edge_options.add_argument("--start-fullscreen")
+        # self.driver = webdriver.Edge(options=edge_options)
         self.driver.get(initial_page)
 
         self.ui_elements = UIElements(self.driver, self.click_threshold)
@@ -78,15 +78,15 @@ class GazePoint:
                 break
 
     def control(self):
-        # control_commands = [
-        #     '<SET ID="ENABLE_SEND_CURSOR" STATE="1" />\r\n',
-        #     '<SET ID="ENABLE_SEND_POG_FIX" STATE="1" />\r\n',
-        #     '<SET ID="ENABLE_SEND_TIME" STATE="1" />\r\n',
-        #     '<SET ID="ENABLE_SEND_DATA" STATE="1" />\r\n'
-        # ]
-        #
-        # for cmd in control_commands:
-        #     self.socket.send(cmd.encode())
+        control_commands = [
+            '<SET ID="ENABLE_SEND_CURSOR" STATE="1" />\r\n',
+            '<SET ID="ENABLE_SEND_POG_FIX" STATE="1" />\r\n',
+            '<SET ID="ENABLE_SEND_TIME" STATE="1" />\r\n',
+            '<SET ID="ENABLE_SEND_DATA" STATE="1" />\r\n'
+        ]
+
+        for cmd in control_commands:
+            self.socket.send(cmd.encode())
 
         # Keyboard listener to stop on Esc press
         def on_release(key):
@@ -96,13 +96,7 @@ class GazePoint:
         with keyboard.Listener(on_release=on_release) as listener:
             self.ui_elements.load_ui_scripts()
             while listener.running:
-                # rxdat = self.socket.recv(1024).decode()
-
-                mouse_x, mouse_y = pyautogui.position()
-                normalized_x = mouse_x / self.screen_width
-                normalized_y = mouse_y / self.screen_height
-                rxdat = f'<REC FPOGX="{normalized_x}" FPOGY="{normalized_y}" TIME="{time.time()}" />'
-
+                rxdat = self.socket.recv(1024).decode()
                 try:
                     root = ET.fromstring(rxdat)
                     if root.tag == "REC":
@@ -111,7 +105,6 @@ class GazePoint:
                                         float(root.attrib.get('TIME')))
                         pyautogui.FAILSAFE = False
                         pyautogui.moveTo(record.x * self.screen_width, record.y * self.screen_height)
-                        # self.scroll_detection(record)
                         self.click_detection(record)
 
                 except ET.ParseError:
@@ -125,7 +118,7 @@ class GazePoint:
             if closest_element == self.click_element and (record.time - self.click_start_time >= self.click_delay):
                 try:
                     closest_element.click()
-                    self.ui_elements.add_overlay()
+                    self.ui_elements.load_ui_scripts()
                 except:
                     pass
 
