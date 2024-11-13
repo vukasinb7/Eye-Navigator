@@ -35,10 +35,6 @@ class GazePoint:
         chrome_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
         chrome_options.add_argument("--start-fullscreen")
         self.driver = webdriver.Chrome(options=chrome_options)
-        # edge_options = webdriver.EdgeOptions()
-        # edge_options.add_experimental_option('excludeSwitches', ['load-extension', 'enable-automation'])
-        # edge_options.add_argument("--start-fullscreen")
-        # self.driver = webdriver.Edge(options=edge_options)
         self.driver.get(initial_page)
 
         self.ui_elements = UIElements(self.driver, self.click_threshold)
