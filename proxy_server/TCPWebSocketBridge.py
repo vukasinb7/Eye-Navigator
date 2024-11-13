@@ -15,12 +15,25 @@ class TCPWebSocketBridge:
         Handles the TCP connection and forwards data to WebSocket.
         """
         try:
+            buffer = b''  # Buffer to accumulate data
+
             while True:
-                data = await reader.read(100)
+                data = await reader.read(100)  # Read data in chunks
                 if not data:
-                    break
-                print(f"Received {data!r} from TCP")
-                await websocket.send(data)  # Forward data to WebSocket
+                    break  # Connection closed
+
+                buffer += data  # Accumulate data into buffer
+
+                # Check if buffer contains a complete message (end of message is assumed to be '\r\n')
+                if b'\r\n' in buffer:
+                    # Split the buffer into complete messages
+                    messages = buffer.split(b'\r\n')
+                    for message in messages[:-1]:  # Process all complete messages except the last one
+                        print(f"Received {message!r} from TCP")
+                        await websocket.send(message)  # Forward data to WebSocket
+
+                    buffer = messages[-1]  # Remaining data in the buffer (incomplete message)
+
         except asyncio.CancelledError:
             pass
         finally:
