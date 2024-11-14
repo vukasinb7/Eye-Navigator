@@ -1,4 +1,4 @@
-// Create and style the custom cursor element (only once when the content script is loaded)
+// Create and style the custom cursor element
 const customCursor = document.createElement('div');
 customCursor.id = 'gaze-cursor';
 document.body.appendChild(customCursor);
@@ -9,29 +9,8 @@ customCursor.style.height = '15px';
 customCursor.style.backgroundColor = 'red';
 customCursor.style.borderRadius = '50%';
 customCursor.style.pointerEvents = 'none';
-customCursor.style.zIndex = '10000';
+customCursor.style.zIndex = '100000002';
 
-// Create and style the overlay (optional)
-const overlay = document.createElement('div');
-overlay.id = 'gaze-overlay';
-overlay.textContent = "Gaze Control Active";
-overlay.style.position = 'fixed';
-overlay.style.top = '10px';
-overlay.style.right = '10px';
-overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-overlay.style.color = 'white';
-overlay.style.padding = '10px';
-overlay.style.borderRadius = '5px';
-overlay.style.zIndex = '10000';
-document.body.appendChild(overlay);
-
-// Listen for the gaze data message from the background script
-chrome.runtime.onMessage.addListener((message) => {
-    if (message.type === 'gazeData') {
-        const xmlData = message.payload;
-        parseAndUpdateCursor(xmlData);
-    }
-});
 
 // Parse the XML message and update the cursor position
 function parseAndUpdateCursor(xmlData) {
@@ -57,8 +36,18 @@ function parseAndUpdateCursor(xmlData) {
 // Update the cursor's position based on the gaze coordinates
 function updateCursorPosition(x, y) {
     const customCursor = document.getElementById('gaze-cursor');
+    let cursorX = x * window.innerWidth
+    let cursorY = y * window.innerHeight
     if (customCursor) {
-        customCursor.style.left = `${x * window.innerWidth}px`;  // Scale based on window width
-        customCursor.style.top = `${y * window.innerHeight}px`;  // Scale based on window height
+        customCursor.style.left = `${cursorX}px`;  // Scale based on window width
+        customCursor.style.top = `${cursorY}px`;  // Scale based on window height
     }
+
+    const cursorUpdatedEvent = new CustomEvent('cursorUpdated', {
+        detail: {
+            x: cursorX,
+            y: cursorY
+        }
+    });
+    document.dispatchEvent(cursorUpdatedEvent);
 }

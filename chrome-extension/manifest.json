@@ -15,7 +15,7 @@
     "https://*/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background.js"
   },
   "content_scripts": [
     {
@@ -23,8 +23,13 @@
         "<all_urls>"
       ],
       "js": [
-        "content.js"
-      ]
+        "src/svgs.js",
+        "src/cursor.js",
+        "src/overlay.js",
+        "src/element_selection.js",
+        "src/content.js"
+      ],
+     "css": ["src/style.css"]
     }
   ],
   "action": {

@@ -1,4 +1,4 @@
-window.findClosestElement = function(x, y, range) {
+function findClosestElement(x, y, range) {
     const elements = Array.from(document.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
 
     function getDistanceToPoint(rect, x, y) {
@@ -24,4 +24,9 @@ window.findClosestElement = function(x, y, range) {
         }
     });
     return closestElement;
-};
+}
+
+document.addEventListener('cursorUpdated', function () {
+    let element = isCursorOverlappingWithRange()
+    element.style.border = '2px solid red';
+});
