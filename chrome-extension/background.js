@@ -3,7 +3,7 @@ const port = 5050;
 const address = `ws://${ip}:${port}`;
 let socket;
 let windowWidth = 2560
-let windowHeight = 800
+let windowHeight = 1080
 
 function connectWebSocket() {
     socket = new WebSocket(address);

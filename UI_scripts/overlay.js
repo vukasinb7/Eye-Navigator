@@ -26,7 +26,7 @@ function createNavigationArrowButton(direction) {
     arrow.style.height = '50px';
     arrow.style.margin = '10px';
     arrow.style.backgroundColor = 'rgba(7, 15, 43, 0.8)';
-    arrow.style.borderRadius='10px';
+    arrow.style.borderRadius = '10px';
     arrow.style.cursor = 'pointer';
     arrow.style.display = 'flex';
     arrow.style.alignItems = 'center';
@@ -86,8 +86,8 @@ function createLoadableButton(type, icon, action) {
     button.style.height = '50px';
     button.style.margin = '10px';
     button.style.backgroundColor = 'rgba(7, 15, 43, 0.8)';
-    button.style.borderRadius='10px';
-    button.style.overflow='hidden';
+    button.style.borderRadius = '10px';
+    button.style.overflow = 'hidden';
     button.style.cursor = 'pointer';
     button.style.display = 'flex';
     button.style.alignItems = 'center';

@@ -10,75 +10,73 @@ class TCPWebSocketBridge:
         self.ws_host = ws_host
         self.ws_port = ws_port
 
-    async def handle_tcp_connection(self, reader: StreamReader, writer: StreamWriter, websocket):
+    async def forward_tcp_to_ws(self, reader: StreamReader, websocket):
         """
-        Handles the TCP connection and forwards data to WebSocket.
+        Forwards data from the TCP connection to the WebSocket.
         """
         try:
-            buffer = b''  # Buffer to accumulate data
+            buffer = bytearray()
 
             while True:
-                data = await reader.read(100)  # Read data in chunks
+                data = await reader.read(100)
                 if not data:
-                    break  # Connection closed
+                    break
 
-                buffer += data  # Accumulate data into buffer
+                buffer.extend(data)
 
-                # Check if buffer contains a complete message (end of message is assumed to be '\r\n')
                 if b'\r\n' in buffer:
-                    # Split the buffer into complete messages
-                    messages = buffer.split(b'\r\n')
-                    for message in messages[:-1]:  # Process all complete messages except the last one
+                    *messages, buffer = buffer.split(b'\r\n')
+                    for message in messages:
                         print(f"Received {message!r} from TCP")
-                        await websocket.send(message)  # Forward data to WebSocket
+                        await websocket.send(message)
 
-                    buffer = messages[-1]  # Remaining data in the buffer (incomplete message)
-
-        except asyncio.CancelledError:
+        except (asyncio.CancelledError, websockets.exceptions.ConnectionClosed):
             pass
         finally:
             print("TCP connection closed")
+
+    async def forward_ws_to_tcp(self, websocket, writer: StreamWriter):
+        """
+        Forwards data from the WebSocket to the TCP connection.
+        """
+        try:
+            async for message in websocket:
+                print(f"Received {message!r} from WebSocket")
+                writer.write(message)
+                await writer.drain()
+        except (asyncio.CancelledError, websockets.exceptions.ConnectionClosed):
+            pass
+        finally:
+            print("WebSocket connection closed")
             writer.close()
+            await writer.wait_closed()
 
     async def handle_ws_connection(self, websocket):
         """
-        Handles WebSocket connections and forwards data to TCP.
+        Handles WebSocket connections and starts forwarding tasks.
         """
-        # Connect to the TCP server
-        tcp_client = await asyncio.open_connection(self.tcp_host, self.tcp_port)
-        tcp_reader, tcp_writer = tcp_client
-
+        tcp_reader, tcp_writer = await asyncio.open_connection(self.tcp_host, self.tcp_port)
         print(f"WebSocket connection opened, forwarding to TCP server {self.tcp_host}:{self.tcp_port}")
 
-        # Start a task that listens for WebSocket data and forwards it to TCP
-        async def forward_ws_to_tcp():
-            try:
-                async for message in websocket:
-                    print(f"Received {message!r} from WebSocket")
-                    tcp_writer.write(message)  # Forward message to TCP
-                    await tcp_writer.drain()
-            except websockets.exceptions.ConnectionClosed:
-                pass
-            finally:
-                print("WebSocket connection closed")
-                tcp_writer.close()
-
-        # Start both the TCP to WebSocket and WebSocket to TCP forwarding tasks
-        await asyncio.gather(
-            self.handle_tcp_connection(tcp_reader, tcp_writer, websocket),
-            forward_ws_to_tcp()
-        )
+        try:
+            await asyncio.gather(
+                self.forward_tcp_to_ws(tcp_reader, websocket),
+                self.forward_ws_to_tcp(websocket, tcp_writer)
+            )
+        except asyncio.CancelledError:
+            print("WebSocket connection task canceled")
 
     async def start_server(self):
         """
-        Start both TCP and WebSocket servers.
+        Start the WebSocket server.
         """
-        # WebSocket server
         ws_server = await websockets.serve(self.handle_ws_connection, self.ws_host, self.ws_port)
         print(f"WebSocket server started at ws://{self.ws_host}:{self.ws_port}")
 
-        # Start the asyncio event loop for WebSocket server
-        await ws_server.wait_closed()
+        try:
+            await ws_server.wait_closed()
+        except asyncio.CancelledError:
+            print("Server shutdown")
 
 
 if __name__ == "__main__":
@@ -88,4 +86,7 @@ if __name__ == "__main__":
     ws_port = 5050
 
     bridge = TCPWebSocketBridge(tcp_host, tcp_port, ws_host, ws_port)
-    asyncio.run(bridge.start_server())
+    try:
+        asyncio.run(bridge.start_server())
+    except KeyboardInterrupt:
+        print("Server stopped manually")
