@@ -39,15 +39,10 @@ function updateCursorPosition(x, y) {
     let cursorX = x * window.innerWidth
     let cursorY = y * window.innerHeight
     if (customCursor) {
-        customCursor.style.left = `${cursorX}px`;  // Scale based on window width
-        customCursor.style.top = `${cursorY}px`;  // Scale based on window height
+        customCursor.style.left = `${cursorX}px`;
+        customCursor.style.top = `${cursorY}px`;
     }
 
-    const cursorUpdatedEvent = new CustomEvent('cursorUpdated', {
-        detail: {
-            x: cursorX,
-            y: cursorY
-        }
-    });
+    const cursorUpdatedEvent = new CustomEvent('cursorUpdated', {});
     document.dispatchEvent(cursorUpdatedEvent);
 }

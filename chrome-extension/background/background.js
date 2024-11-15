@@ -10,7 +10,7 @@ function connectWebSocket() {
 
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket server');
-        sendCalibrationCommands();
+        sendEnableCommand();
     });
 
     socket.addEventListener('message', (event) => {
@@ -23,7 +23,6 @@ function connectWebSocket() {
                 const arrayBuffer = e.target.result;
                 const decoder = new TextDecoder("utf-8");
                 const xmlData = decoder.decode(arrayBuffer);
-                console.log('Received message:', xmlData);
 
                 // Send the decoded XML data to the content script
                 if (xmlData.includes('REC')) {
@@ -64,7 +63,7 @@ function connectWebSocket() {
     });
 }
 
-function sendCalibrationCommands() {
+function sendCalibrateCommand() {
     // Define the commands
     const commands = [
         `<SET ID="SCREEN_SIZE" X="0" Y="0" WIDTH=${windowWidth} HEIGHT="${windowHeight}"/>\r\n`,
@@ -108,5 +107,32 @@ function sendEnableCommand() {
         socket.send(encoder.encode(cmd));
     });
 }
+
+function sendDisableCommand() {
+    // Define the commands
+    const commands = [
+        '<SET ID="ENABLE_SEND_DATA" STATE="0" />\r\n'
+    ]
+
+    // Send all commands to the WebSocket server
+    const encoder = new TextEncoder();
+    commands.forEach(cmd => {
+        socket.send(encoder.encode(cmd));
+    });
+}
+
+chrome.runtime.onMessage.addListener(function(message) {
+    if (message.type === 'enableGaze') {
+        sendEnableCommand();
+    }
+    else if (message.type === 'disableGaze') {
+        sendDisableCommand();
+    }
+    else if (message.type === 'calibrateGaze') {
+        sendCalibrateCommand();
+    }
+    return true;
+});
+
 
 connectWebSocket();

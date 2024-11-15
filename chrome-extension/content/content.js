@@ -4,4 +4,7 @@ chrome.runtime.onMessage.addListener((message) => {
         const xmlData = message.payload;
         parseAndUpdateCursor(xmlData);
     }
+    else{
+        console.log(message);
+    }
 });

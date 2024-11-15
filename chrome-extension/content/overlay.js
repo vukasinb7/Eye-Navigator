@@ -1,19 +1,19 @@
-function isCursorOverlappingWithRange(cursor, element, range) {
-    const cursorRect = cursor.getBoundingClientRect();
-    const elementRect = element.getBoundingClientRect();
+function isOverlapping(element1, element2) {
+    const element1Rect = element1.getBoundingClientRect();
+    const element2Rect = element2.getBoundingClientRect();
 
     const expandedCursorRect = {
-        left: cursorRect.left - range,
-        right: cursorRect.right + range,
-        top: cursorRect.top - range,
-        bottom: cursorRect.bottom + range
+        left: element1Rect.left,
+        right: element1Rect.right,
+        top: element1Rect.top,
+        bottom: element1Rect.bottom
     };
 
     return (
-        expandedCursorRect.left < elementRect.right &&
-        expandedCursorRect.right > elementRect.left &&
-        expandedCursorRect.top < elementRect.bottom &&
-        expandedCursorRect.bottom > elementRect.top
+        expandedCursorRect.left < element2Rect.right &&
+        expandedCursorRect.right > element2Rect.left &&
+        expandedCursorRect.top < element2Rect.bottom &&
+        expandedCursorRect.bottom > element2Rect.top
     );
 }
 
@@ -77,8 +77,8 @@ function createLoadableButton(type, icon, action = function () {
         }, 50);
     };
 
-    document.addEventListener('cursorUpdated', function () {
-        if (isCursorOverlappingWithRange(customCursor, button, 0)) {
+    document.addEventListener('cursorUpdated', function (event) {
+        if (isOverlapping(customCursor, button)) {
             if (!isLoading) {
                 loadingFill.style.height = '100%';
                 isLoading = true
@@ -102,7 +102,7 @@ function createNavigationArrowButton(direction) {
     }, 1);
 
     let scrollSpeed = 10;
-    let maxScrollSpeed = 150;
+    let maxScrollSpeed = 100;
     let acceleration = 5;
     let hoverTime = 0;
     let scrollDelayTimeout;
@@ -124,8 +124,8 @@ function createNavigationArrowButton(direction) {
         }, 50);
     }
 
-    document.addEventListener('cursorUpdated', function () {
-        if (isCursorOverlappingWithRange(customCursor, arrowButton, 0)) {
+    document.addEventListener('cursorUpdated', function (event) {
+        if (isOverlapping(customCursor, arrowButton)) {
             if (!isScrolling) {
                 isScrolling = true;
                 scrollDelayTimeout = setTimeout(function () {
