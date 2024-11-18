@@ -9,10 +9,13 @@
     "storage",
     "webNavigation",
     "scripting"
+
   ],
   "host_permissions": [
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "chrome://*/*",
+    "chrome-extension://*/*"
   ],
   "background": {
     "service_worker": "background/background.js"

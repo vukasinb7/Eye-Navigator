@@ -11,6 +11,10 @@ function connectWebSocket() {
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket server');
         sendEnableCommand();
+        chrome.windows.getCurrent((window) => {
+            const windowId = window.id;
+            chrome.windows.update(windowId, {state: "fullscreen"});
+        });
     });
 
     socket.addEventListener('message', (event) => {
@@ -28,7 +32,7 @@ function connectWebSocket() {
                 if (xmlData.includes('REC')) {
                     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
                         tabs.forEach((tab) => {
-                            if (tab.url && typeof tab.url === 'string' && tab.url !== '' && !tab.url.startsWith("chrome://")) {
+                            if (tab.url) {
                                 // Send message to the content script with decoded XML data
                                 chrome.tabs.sendMessage(tab.id, {type: 'gazeData', payload: xmlData});
                             } else {
@@ -133,6 +137,19 @@ chrome.runtime.onMessage.addListener(function(message) {
     }
     return true;
 });
+function navigateToLocalPage() {
+    const localUrl = chrome.runtime.getURL("favourites/favorites_page.html");
+
+    // Query for the active tab in the current window
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        if (tabs.length > 0) {
+            const tabId = tabs[0].id;
+            chrome.tabs.update(tabId, {url: localUrl});
+        }
+    });
+}
+
 
 
 connectWebSocket();
+navigateToLocalPage();
