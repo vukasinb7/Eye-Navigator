@@ -159,7 +159,8 @@ function createOverlayToggleButton() {
     return toggleButton;
 }
 
-let container = createOverlayContainer();
+let overlayContainer = createOverlayContainer();
+overlayContainer.style.display = "none";
 
 let upButton = createNavigationArrowButton('up')
 let leftButton = createNavigationArrowButton('left')
@@ -176,12 +177,13 @@ let refreshButton = createLoadableButton('refresh', refreshArrowSVG(), function 
     location.reload();
 });
 let toggleButton = createOverlayToggleButton();
+toggleButton.style.display = "none";
 
-container.appendChild(upButton);
-container.appendChild(leftButton);
-container.appendChild(rightButton);
-container.appendChild(downButton);
-container.appendChild(backButton);
-container.appendChild(forwardButton);
-container.appendChild(refreshButton);
+overlayContainer.appendChild(upButton);
+overlayContainer.appendChild(leftButton);
+overlayContainer.appendChild(rightButton);
+overlayContainer.appendChild(downButton);
+overlayContainer.appendChild(backButton);
+overlayContainer.appendChild(forwardButton);
+overlayContainer.appendChild(refreshButton);
 document.body.appendChild(toggleButton);

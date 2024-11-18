@@ -10,6 +10,7 @@ customCursor.style.backgroundColor = 'red';
 customCursor.style.borderRadius = '50%';
 customCursor.style.pointerEvents = 'none';
 customCursor.style.zIndex = '100000002';
+customCursor.style.display = "none";
 
 
 // Parse the XML message and update the cursor position

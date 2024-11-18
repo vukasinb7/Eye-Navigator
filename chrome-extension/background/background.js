@@ -11,10 +11,10 @@ function connectWebSocket() {
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket server');
         sendEnableCommand();
-        chrome.windows.getCurrent((window) => {
-            const windowId = window.id;
-            chrome.windows.update(windowId, {state: "fullscreen"});
-        });
+        // chrome.windows.getCurrent((window) => {
+        //     const windowId = window.id;
+        //     chrome.windows.update(windowId, {state: "fullscreen"});
+        // });
     });
 
     socket.addEventListener('message', (event) => {
@@ -33,10 +33,9 @@ function connectWebSocket() {
                     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
                         tabs.forEach((tab) => {
                             if (tab.url) {
-                                // Send message to the content script with decoded XML data
                                 chrome.tabs.sendMessage(tab.id, {type: 'gazeData', payload: xmlData});
                             } else {
-                                console.error("Skipping tab with no URL or accessing a chrome:// page:", tab.url);
+                                console.error("Skipping tab with no URL:", tab.url);
                             }
                         });
                     });
@@ -125,18 +124,19 @@ function sendDisableCommand() {
     });
 }
 
-chrome.runtime.onMessage.addListener(function(message) {
+chrome.runtime.onMessage.addListener(function (message) {
     if (message.type === 'enableGaze') {
         sendEnableCommand();
-    }
-    else if (message.type === 'disableGaze') {
+        chrome.storage.local.set({extension_state: "enabled"}, () => {console.log('Extension state set to enabled');});
+    } else if (message.type === 'disableGaze') {
         sendDisableCommand();
-    }
-    else if (message.type === 'calibrateGaze') {
+        chrome.storage.local.set({extension_state: "disabled"}, () => {console.log('Extension state set to disabled');});
+    } else if (message.type === 'calibrateGaze') {
         sendCalibrateCommand();
     }
     return true;
 });
+
 function navigateToLocalPage() {
     const localUrl = chrome.runtime.getURL("favourites/favorites_page.html");
 
@@ -148,7 +148,6 @@ function navigateToLocalPage() {
         }
     });
 }
-
 
 
 connectWebSocket();
