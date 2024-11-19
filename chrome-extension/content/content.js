@@ -24,7 +24,7 @@ function change_ui_state(state){
     if (state === "enabled") {
         customCursor.style.display = "flex"
         overlayContainer.style.display = "flex"
-        overlayContainer.style.display = "flex"
+        toggleButton.style.display = "flex"
     } else {
         customCursor.style.display = "none"
         overlayContainer.style.display = "none"

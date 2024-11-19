@@ -3,17 +3,16 @@ function isOverlapping(element1, element2) {
     const element2Rect = element2.getBoundingClientRect();
 
     const expandedCursorRect = {
-        left: element1Rect.left,
-        right: element1Rect.right,
-        top: element1Rect.top,
-        bottom: element1Rect.bottom
+        horizontal: (element1Rect.left + element1Rect.right) * 0.5,
+        vertical: (element1Rect.top + element1Rect.bottom) * 0.5,
     };
 
+
     return (
-        expandedCursorRect.left < element2Rect.right &&
-        expandedCursorRect.right > element2Rect.left &&
-        expandedCursorRect.top < element2Rect.bottom &&
-        expandedCursorRect.bottom > element2Rect.top
+        expandedCursorRect.horizontal < element2Rect.right &&
+        expandedCursorRect.horizontal > element2Rect.left &&
+        expandedCursorRect.vertical < element2Rect.bottom &&
+        expandedCursorRect.vertical > element2Rect.top
     );
 }
 
@@ -36,7 +35,7 @@ function createOverlayContainer() {
     return container;
 }
 
-function createLoadableButton(type, icon, action = function () {
+function createLoadableButton(type, icon, action = () => {
 }, loadingDuration = 3) {
     let button = document.createElement('div');
     button.className = type + '-button';
@@ -55,6 +54,7 @@ function createLoadableButton(type, icon, action = function () {
     button.style.zIndex = '100000001';
     button.innerHTML = icon;
 
+
     let loadingFill = document.createElement('div');
     loadingFill.className = 'loading-fill';
     loadingFill.style.position = 'absolute';
@@ -64,7 +64,18 @@ function createLoadableButton(type, icon, action = function () {
     loadingFill.style.height = '0%';
     loadingFill.style.backgroundColor = 'rgba(0, 128, 0, 0.5)';
     loadingFill.style.transition = `height ${loadingDuration}s linear`;
-    button.appendChild(loadingFill);
+
+
+    let buttonContainer = document.createElement('a');
+    buttonContainer.id = 'custom-gaze-button-' + type;
+    buttonContainer.style.position='relative';
+    buttonContainer.style.width = '100%';
+    buttonContainer.style.height = '100%';
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.justifyContent = 'center';
+    buttonContainer.style.alignItems = 'center';
+    buttonContainer.appendChild(loadingFill);
+    buttonContainer.appendChild(button);
 
     let timeout;
     let isLoading = false;
@@ -78,10 +89,11 @@ function createLoadableButton(type, icon, action = function () {
     };
 
     document.addEventListener('cursorUpdated', function (event) {
-        if (isOverlapping(customCursor, button)) {
+        if (isOverlapping(customCursor, buttonContainer)) {
             if (!isLoading) {
                 loadingFill.style.height = '100%';
                 isLoading = true
+
                 timeout = setTimeout(function () {
                     loadingFill.style.height = '0%';
                     action();
@@ -94,8 +106,9 @@ function createLoadableButton(type, icon, action = function () {
             isLoading = false
         }
     });
-    return button;
+    return buttonContainer;
 }
+
 
 function createNavigationArrowButton(direction) {
     let arrowButton = createLoadableButton(direction, directionArrowSVG(direction), function () {
@@ -143,20 +156,76 @@ function createNavigationArrowButton(direction) {
     return arrowButton;
 }
 
-function createOverlayToggleButton() {
-    let toggleButton = createLoadableButton('toggle', '&#9776;', function () {
-        let container = document.querySelector('.gaze-overlay-ui-container');
-        let isHidden = container.style.display === 'none';
+function createOverlayToggleButton(loadingDuration = 3) {
+    let button = document.createElement('a');
+    button.id = 'custom-gaze-button-toggle';
+    button.className = 'toggle-button';
+    button.style.width = '50px';
+    button.style.height = '50px';
+    button.style.margin = '10px';
+    button.style.backgroundColor = 'rgba(7, 15, 43, 0.8)';
+    button.style.borderRadius = '10px';
+    button.style.overflow = 'hidden';
+    button.style.cursor = 'pointer';
+    button.style.display = 'flex';
+    button.style.alignItems = 'center';
+    button.style.justifyContent = 'center';
+    button.style.color = 'white';
+    button.style.position = 'fixed';
+    button.style.top = '10px';
+    button.style.left = '110px';
+    button.style.zIndex = '100000001';
+    button.innerHTML = '&#9776;';
 
-        toggleButton.style.left = isHidden ? '110px' : '0px';
-        container.style.display = isHidden ? 'flex' : 'none';
+
+    let loadingFill = document.createElement('div');
+    loadingFill.className = 'loading-fill';
+    loadingFill.style.position = 'absolute';
+    loadingFill.style.bottom = '0';
+    loadingFill.style.left = '0';
+    loadingFill.style.width = '100%';
+    loadingFill.style.height = '0%';
+    loadingFill.style.backgroundColor = 'rgba(0, 128, 0, 0.5)';
+    loadingFill.style.transition = `height ${loadingDuration}s linear`;
+    button.appendChild(loadingFill);
+
+
+    let timeout;
+    let isLoading = false;
+
+    let resetTransition = function () {
+        loadingFill.style.transition = 'none';
+        loadingFill.style.height = '0%';
+        setTimeout(function () {
+            loadingFill.style.transition = `height ${loadingDuration}s linear`;
+        }, 50);
+    };
+
+    document.addEventListener('cursorUpdated', function (event) {
+        if (isOverlapping(customCursor, button)) {
+            if (!isLoading) {
+                loadingFill.style.height = '100%';
+                isLoading = true
+
+                timeout = setTimeout(function () {
+                    loadingFill.style.height = '0%';
+                    let container = document.querySelector('.gaze-overlay-ui-container');
+                    let isHidden = container.style.display === 'none';
+
+                    toggleButton.style.left = isHidden ? '110px' : '0px';
+                    container.style.display = isHidden ? 'flex' : 'none';
+                    resetTransition();
+                }, loadingDuration * 1000);
+            }
+        } else {
+            clearTimeout(timeout);
+            resetTransition();
+            isLoading = false
+        }
     });
 
-    toggleButton.style.position = 'fixed';
-    toggleButton.style.top = '10px';
-    toggleButton.style.left = '110px';
-    toggleButton.style.zIndex = '100000001';
-    return toggleButton;
+
+    return button;
 }
 
 let overlayContainer = createOverlayContainer();
@@ -167,18 +236,23 @@ let leftButton = createNavigationArrowButton('left')
 let rightButton = createNavigationArrowButton('right')
 let downButton = createNavigationArrowButton('down')
 
-let backButton = createLoadableButton('back', backArrowSVG(), function () {
+let homeButton = createLoadableButton('home', homeIconSVG(), (e) => {
+    const modal = document.querySelector('.custom-gaze-control-modal');
+    modal.classList.toggle('active');
+});
+let backButton = createLoadableButton('back', backArrowSVG(), () => {
     window.history.back();
 });
-let forwardButton = createLoadableButton('forward', forwardArrowSVG(), function () {
+let forwardButton = createLoadableButton('forward', forwardArrowSVG(), () => {
     window.history.forward();
 });
-let refreshButton = createLoadableButton('refresh', refreshArrowSVG(), function () {
-    location.reload();
+let refreshButton = createLoadableButton('refresh', refreshArrowSVG(), () => {
+    location.reload()
 });
 let toggleButton = createOverlayToggleButton();
 toggleButton.style.display = "none";
 
+overlayContainer.appendChild(homeButton);
 overlayContainer.appendChild(upButton);
 overlayContainer.appendChild(leftButton);
 overlayContainer.appendChild(rightButton);

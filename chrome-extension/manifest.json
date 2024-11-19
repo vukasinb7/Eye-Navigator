@@ -28,6 +28,7 @@
       "js": [
         "content/svgs.js",
         "content/cursor.js",
+        "content/home.js",
         "content/overlay.js",
         "content/element_selection.js",
         "content/content.js"

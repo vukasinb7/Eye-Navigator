@@ -9,10 +9,6 @@ document.getElementById('enableGaze').addEventListener('click', () => {
 
 document.getElementById('disableGaze').addEventListener('click', () => {
   chrome.runtime.sendMessage({ type: 'disableGaze' });
-  chrome.windows.getCurrent((window) => {
-    const windowId = window.id;
-    chrome.windows.update(windowId, {state: "maximized"});
-  });
 });
 
 document.getElementById('calibrateGaze').addEventListener('click', () => {

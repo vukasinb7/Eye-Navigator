@@ -137,18 +137,6 @@ chrome.runtime.onMessage.addListener(function (message) {
     return true;
 });
 
-function navigateToLocalPage() {
-    const localUrl = chrome.runtime.getURL("favourites/favorites_page.html");
-
-    // Query for the active tab in the current window
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-        if (tabs.length > 0) {
-            const tabId = tabs[0].id;
-            chrome.tabs.update(tabId, {url: localUrl});
-        }
-    });
-}
 
 
 connectWebSocket();
-navigateToLocalPage();

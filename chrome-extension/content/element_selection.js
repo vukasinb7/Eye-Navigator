@@ -19,23 +19,44 @@ function findClosestElementToCursor(customCursor, range) {
         return Math.sqrt((cursorCenterX - (left ? rect.left : rect.right)) ** 2 + (cursorCenterY - (top ? rect.top : rect.bottom)) ** 2);
     }
 
-    let closestElement = null;
-    let minDistance = Infinity;
-
-    elements.forEach(el => {
+    // Filter elements within the specified range
+    const filteredElements = elements.filter(el => {
         const rect = el.getBoundingClientRect();
-
-        // Check if element is within the specified range of the cursor's expanded area
-        if (rect.left <= cursorCenterX + range && rect.right >= cursorCenterX - range && rect.top <= cursorCenterY + range && rect.bottom >= cursorCenterY - range) {
-            const distance = getDistanceToRect(rect);
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestElement = el;
-            }
-        }
+        return (
+            rect.left <= cursorCenterX + range &&
+            rect.right >= cursorCenterX - range &&
+            rect.top <= cursorCenterY + range &&
+            rect.bottom >= cursorCenterY - range
+        );
     });
 
-    return closestElement;
+    // Map filtered elements to include distances
+    const elementsWithDistances = filteredElements.map(el => {
+        const rect = el.getBoundingClientRect();
+        return {element: el, distance: getDistanceToRect(rect)};
+    });
+
+    if (elementsWithDistances.length === 0) {
+        return null;
+    } else {
+        elementsWithDistances.sort((a, b) => a.distance - b.distance);
+
+        const lowestDistance = elementsWithDistances[0]?.distance;
+        const elementsWithLowestDistance = elementsWithDistances.filter(
+            ({distance}) => distance === lowestDistance
+        );
+
+        if (elementsWithLowestDistance.length > 1) {
+            const gazeControlElement = elementsWithLowestDistance.find(({element}) =>
+                element.id && element.id.startsWith("custom-gaze")
+            );
+
+            if (gazeControlElement) {
+                return gazeControlElement.element;
+            }
+        }
+        return elementsWithLowestDistance[0].element;
+    }
 }
 
 document.addEventListener('cursorUpdated', function () {
