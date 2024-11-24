@@ -15,17 +15,73 @@ const modalHtml = `
             </div>
         </div>
     </div>
-    <div class="gaze-control-grid-container" id="gaze-control-favorites-container">
+    <div class="gaze-control-grid-container-wrapper">
+    
+        <div class="gaze-control-grid-container" id="gaze-control-favorites-container">
+        </div>
+        <a id="add-bookmark-button">
+          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="80" height="80" viewBox="0,0,256,256">
+            <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(8.53333,8.53333)"><path d="M15,3c-6.627,0 -12,5.373 -12,12c0,6.627 5.373,12 12,12c6.627,0 12,-5.373 12,-12c0,-6.627 -5.373,-12 -12,-12zM21,16h-5v5c0,0.553 -0.448,1 -1,1c-0.552,0 -1,-0.447 -1,-1v-5h-5c-0.552,0 -1,-0.447 -1,-1c0,-0.553 0.448,-1 1,-1h5v-5c0,-0.553 0.448,-1 1,-1c0.552,0 1,0.447 1,1v5h5c0.552,0 1,0.447 1,1c0,0.553 -0.448,1 -1,1z"></path></g></g>
+          </svg>
+          <p>Add Current Page</p>
+        </a>
     </div>
 </div>
 </section>
 `;
 
+function loadBookmarks() {
+
+    chrome.storage.local.get(['gazeControlBookmarks'], (result) => {
+        const bookmarks = result.gazeControlBookmarks || [];
+        console.log(bookmarks);
+        const container = document.getElementById('gaze-control-favorites-container');
+        container.innerHTML = '';
+
+        bookmarks.forEach(bookmark => {
+            const domain = new URL(bookmark.url).hostname;
+            const link = document.createElement('a');
+            link.href = bookmark.url;
+            const favCard = document.createElement('div');
+            favCard.className = 'gaze-control-fav-card';
+
+            const img = document.createElement('img');
+            img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+            img.alt = 'website-img';
+
+            const name = document.createElement('p');
+            name.textContent = bookmark.title.length > 23?bookmark.title.slice(0, 23) + '...':bookmark.title;
+
+            favCard.appendChild(img);
+            favCard.appendChild(name);
+
+            link.appendChild(favCard);
+            container.appendChild(link);
+        });
+    });
+}
+
+function addCurrentPageToBookmarks() {
+    const currentPageTitle = document.title; // Page title
+    const currentPageURL = window.location.href; // Page URL
+
+    chrome.storage.local.get(['gazeControlBookmarks'], (result) => {
+        const bookmarks = result.savedBookmarks || []; // Get existing bookmarks or initialize an empty array
+
+        bookmarks.push({
+            title: currentPageTitle,
+            url: currentPageURL
+        });
+
+        chrome.storage.local.set({gazeControlBookmarks: bookmarks}, () => {
+            console.log('Bookmark added successfully:', {title: currentPageTitle, url: currentPageURL});
+            loadBookmarks();
+        });
+    });
+}
+
+
 document.body.insertAdjacentHTML('beforeend', modalHtml);
+document.getElementById('add-bookmark-button').addEventListener('click', addCurrentPageToBookmarks);
+loadBookmarks();
 
-
-
-document.querySelector('.custom-gaze-control-modal').addEventListener('click', function (e) {
-  document.querySelector('.custom-gaze-control-modal').classList.remove('active');
-  e.preventDefault();
-});

@@ -2,13 +2,24 @@ let previousElement = null;
 let hoverTimer = null;
 let hoverTimeout = 5000;
 
+function getElements() {
+
+        const modalContainer = document.querySelector('.custom-gaze-control-modal');
+        if (modalContainer && modalContainer.classList.contains('active')){
+            let elements=Array.from(modalContainer.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
+            const overlay= document.querySelector('.gaze-overlay-ui-container');
+            elements.concat(Array.from(overlay.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]')))
+            elements.push(document.querySelector('#custom-gaze-button-toggle'));
+        }
+        return Array.from(document.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
+    }
+
 function findClosestElementToCursor(customCursor, range) {
     const cursorRect = customCursor.getBoundingClientRect();
     const cursorCenterX = (cursorRect.left + cursorRect.right) / 2;
     const cursorCenterY = (cursorRect.top + cursorRect.bottom) / 2;
 
-    // Select target elements
-    const elements = Array.from(document.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
+    const elements = getElements();
 
     function getDistanceToRect(rect) {
         if (cursorCenterX >= rect.left && cursorCenterX <= rect.right && cursorCenterY >= rect.top && cursorCenterY <= rect.bottom) return 0;
