@@ -7,9 +7,10 @@ function getElements() {
         const modalContainer = document.querySelector('.custom-gaze-control-modal');
         if (modalContainer && modalContainer.classList.contains('active')){
             let elements=Array.from(modalContainer.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
-            const overlay= document.querySelector('.gaze-overlay-ui-container');
-            elements.concat(Array.from(overlay.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]')))
+            const overlay= Array.from(document.querySelectorAll('.gaze-overlay-ui-container a'));
+            Array.prototype.push.apply(elements, overlay);
             elements.push(document.querySelector('#custom-gaze-button-toggle'));
+            return elements;
         }
         return Array.from(document.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
     }

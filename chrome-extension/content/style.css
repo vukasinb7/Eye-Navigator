@@ -62,12 +62,14 @@
     margin: 25px;
 }
 .gaze-control-fav-card p{
+    margin-top: 5px;
     color: black;
     text-align: center;
+    font-size: 16px !important;
 }
 
 .gaze-control-fav-card img {
-    margin-top: 15px;
+    margin-top: 5px;
     width: 60px;
     height: 60px;
 }
@@ -126,7 +128,7 @@
 }
 .gaze-control-grid-container-wrapper{
 
-    margin-top: 80px;
+    margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -140,4 +142,27 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+}
+
+#custom-gaze-edit-bookmark-button {
+    margin-top:50px;
+    padding: 10px 20px;
+    background-color:rgba(255,255, 255, 0.3);
+    border-radius:10px;
+    backdrop-filter: blur(10px);
+    color: black;
+    cursor: pointer;
+    font-size: 16px;
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    border: 2px solid transparent;
+}
+
+#custom-gaze-edit-bookmark-button p{
+  margin:0;
+  margin-left:10px;
+  font-size:20px;
+
 }
