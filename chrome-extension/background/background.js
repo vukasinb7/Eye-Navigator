@@ -11,10 +11,6 @@ function connectWebSocket() {
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket server');
         sendEnableCommand();
-        // chrome.windows.getCurrent((window) => {
-        //     const windowId = window.id;
-        //     chrome.windows.update(windowId, {state: "fullscreen"});
-        // });
     });
 
     socket.addEventListener('message', (event) => {
@@ -42,7 +38,6 @@ function connectWebSocket() {
                 } else if (xmlData.includes('"CALIB_RESULT"')) {
                     console.log('Calibration result received, stopping calibration display');
                     socket.send(new TextEncoder().encode('<SET ID="CALIBRATE_SHOW" STATE="0" />\r\n'));
-                    sendEnableCommand()
                 }
             };
             reader.onerror = function (error) {

@@ -9,7 +9,6 @@
     "storage",
     "webNavigation",
     "scripting"
-
   ],
   "host_permissions": [
     "http://*/*",

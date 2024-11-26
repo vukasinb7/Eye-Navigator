@@ -2,8 +2,7 @@ let previousElement = null;
 let hoverTimer = null;
 let hoverTimeout = 5000;
 
-function getElements() {
-
+function getPageElements() {
         const modalContainer = document.querySelector('.custom-gaze-control-modal');
         if (modalContainer && modalContainer.classList.contains('active')){
             let elements=Array.from(modalContainer.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
@@ -20,7 +19,7 @@ function findClosestElementToCursor(customCursor, range) {
     const cursorCenterX = (cursorRect.left + cursorRect.right) / 2;
     const cursorCenterY = (cursorRect.top + cursorRect.bottom) / 2;
 
-    const elements = getElements();
+    const elements = getPageElements();
 
     function getDistanceToRect(rect) {
         if (cursorCenterX >= rect.left && cursorCenterX <= rect.right && cursorCenterY >= rect.top && cursorCenterY <= rect.bottom) return 0;

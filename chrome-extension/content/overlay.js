@@ -7,7 +7,6 @@ function isOverlapping(element1, element2) {
         vertical: (element1Rect.top + element1Rect.bottom) * 0.5,
     };
 
-
     return (
         expandedCursorRect.horizontal < element2Rect.right &&
         expandedCursorRect.horizontal > element2Rect.left &&
@@ -68,7 +67,7 @@ function createLoadableButton(type, icon, action = () => {
 
     let buttonContainer = document.createElement('a');
     buttonContainer.id = 'custom-gaze-button-' + type;
-    buttonContainer.style.position='relative';
+    buttonContainer.style.position = 'relative';
     buttonContainer.style.width = '100%';
     buttonContainer.style.height = '100%';
     buttonContainer.style.display = 'flex';
@@ -189,7 +188,6 @@ function createOverlayToggleButton(loadingDuration = 3) {
     loadingFill.style.transition = `height ${loadingDuration}s linear`;
     button.appendChild(loadingFill);
 
-
     let timeout;
     let isLoading = false;
 
@@ -224,7 +222,6 @@ function createOverlayToggleButton(loadingDuration = 3) {
         }
     });
 
-
     return button;
 }
 
@@ -250,7 +247,6 @@ let refreshButton = createLoadableButton('refresh', refreshArrowSVG(), () => {
     location.reload()
 });
 let toggleButton = createOverlayToggleButton();
-toggleButton.style.display = "none";
 
 overlayContainer.appendChild(homeButton);
 overlayContainer.appendChild(upButton);
