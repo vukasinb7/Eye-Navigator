@@ -233,20 +233,26 @@ let leftButton = createNavigationArrowButton('left')
 let rightButton = createNavigationArrowButton('right')
 let downButton = createNavigationArrowButton('down')
 
+let hoverTime;
+getProperties((properties)=>{
+    hoverTime=properties.hoverTime
+})
+
 let homeButton = createLoadableButton('home', homeIconSVG(), (e) => {
     const modal = document.querySelector('.custom-gaze-control-modal');
     modal.classList.toggle('active');
-});
+},hoverTime);
 let backButton = createLoadableButton('back', backArrowSVG(), () => {
     window.history.back();
-});
+},hoverTime);
 let forwardButton = createLoadableButton('forward', forwardArrowSVG(), () => {
     window.history.forward();
-});
+},hoverTime);
 let refreshButton = createLoadableButton('refresh', refreshArrowSVG(), () => {
     location.reload()
-});
-let toggleButton = createOverlayToggleButton();
+},hoverTime);
+let toggleButton = createOverlayToggleButton(hoverTime);
+toggleButton.style.display = "none";
 
 overlayContainer.appendChild(homeButton);
 overlayContainer.appendChild(upButton);

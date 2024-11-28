@@ -25,6 +25,7 @@
         "<all_urls>"
       ],
       "js": [
+        "content/constants.js",
         "content/svgs.js",
         "content/cursor.js",
         "content/home.js",

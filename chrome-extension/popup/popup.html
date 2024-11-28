@@ -7,10 +7,28 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <h3>Eye Navigator</h3>
+  <h2>Eye Navigator</h2>
+  <div class="power-container">
+  <input type="checkbox" id="custom-gaze-switch" /><label for="custom-gaze-switch">Toggle</label>
+  </div>
+
   <button id="calibrateGaze">Calibrate Gaze Control</button>
-  <button id="enableGaze">Enable Gaze Control</button>
-  <button id="disableGaze">Disable Gaze Control</button>
+  <h3 style="margin-top:25px;">Properties</h3>
+  <div class="properties-container">
+    <p>Screen Resolution</p>
+    <div class="resolution-container">
+      <input type="number" id="custom-gaze-screen-w"/>
+      <p>x</p>
+      <input type="number" id="custom-gaze-screen-h"/>
+    </div>
+    <p style="margin-top:10px;">Click Timeout</p>
+    <div class="resolution-container">
+      <input type="number" id="custom-gaze-hover-time"/>
+      <p>ms</p>
+    </div>
+  </div>
+  <button id="custom-gaze-apply">Apply</button>
+
 
   <script src="popup.js"></script>
 </body>

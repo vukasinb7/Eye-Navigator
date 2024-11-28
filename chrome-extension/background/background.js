@@ -2,8 +2,15 @@ const ip = '127.0.0.1';
 const port = 5050;
 const address = `ws://${ip}:${port}`;
 let socket;
-let windowWidth = 1920
-let windowHeight = 1080
+let windowWidth=1920;
+let windowHeight=1080;
+
+chrome.storage.local.get('extension_properties', (result) => {
+        const screenWidth = result.extension_properties?.screenWidth || 1920;
+        const screenHeight = result.extension_properties?.screenHeight || 1080;
+        windowWidth=screenWidth;
+        windowHeight=screenHeight;
+    });
 
 function connectWebSocket() {
     socket = new WebSocket(address);
@@ -122,16 +129,19 @@ function sendDisableCommand() {
 chrome.runtime.onMessage.addListener(function (message) {
     if (message.type === 'enableGaze') {
         sendEnableCommand();
-        chrome.storage.local.set({extension_state: "enabled"}, () => {console.log('Extension state set to enabled');});
+        chrome.storage.local.set({extension_state: "enabled"}, () => {
+            console.log('Extension state set to enabled');
+        });
     } else if (message.type === 'disableGaze') {
         sendDisableCommand();
-        chrome.storage.local.set({extension_state: "disabled"}, () => {console.log('Extension state set to disabled');});
+        chrome.storage.local.set({extension_state: "disabled"}, () => {
+            console.log('Extension state set to disabled');
+        });
     } else if (message.type === 'calibrateGaze') {
         sendCalibrateCommand();
     }
     return true;
 });
-
 
 
 connectWebSocket();

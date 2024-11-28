@@ -1,6 +1,7 @@
 let previousElement = null;
 let hoverTimer = null;
-let hoverTimeout = 5000;
+let hoverTimeout=null;
+getProperties((properties)=>hoverTimeout=properties.hoverTime);
 
 function getPageElements() {
         const modalContainer = document.querySelector('.custom-gaze-control-modal');

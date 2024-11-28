@@ -1,13 +1,93 @@
 body {
-  width: 200px;
-  height: 150px;
-  font-family: Arial, sans-serif;
-  text-align: center;
+    width: 220px;
+    height: 370px;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
 }
 
 button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 20px;
-  font-size: 16px;
+    padding: 10px 15px;
+    margin-top: 20px;
+    font-size: 16px;
+    border: none;
+    background-color: #9290C3;
+    color: white;
+    border-radius: 10px;
+}
+
+input[type=checkbox] {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+
+label {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 100px;
+    height: 50px;
+    background: grey;
+    display: block;
+    border-radius: 100px;
+    position: relative;
+}
+
+label:after {
+    content: '';
+    position: absolute;
+    top: 2.5px;
+    left: 2.5px;
+    width: 45px;
+    height: 45px;
+    background: #fff;
+    border-radius: 90px;
+}
+
+input:checked + label {
+    background: #9290C3;
+}
+
+input:checked + label:after {
+    left: calc(100% - 2.5px);
+    transform: translateX(-100%);
+}
+
+label:active:after {
+    width: 130px;
+}
+
+p {
+    margin: 0;
+}
+
+.power-container {
+    display: flex;
+    justify-content: center;
+    margin-right: 5px;
+}
+
+.properties-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.resolution-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.resolution-container input {
+    width: 25%;
+    margin-top: 5px;
+}
+
+.resolution-container p {
+    margin: 5px 10px 0px 10px;
 }
