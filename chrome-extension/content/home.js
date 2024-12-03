@@ -43,7 +43,6 @@ function loadBookmarks() {
 
     chrome.storage.local.get(['gazeControlBookmarks'], (result) => {
         const bookmarks = result.gazeControlBookmarks || [];
-        console.log(bookmarks);
         const container = document.getElementById('gaze-control-favorites-container');
         container.innerHTML = '';
 

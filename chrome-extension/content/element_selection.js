@@ -1,8 +1,6 @@
 let previousElement = null;
-let hoverTimer = null;
-let hoverTimeout = null;
+let hoverTimer = null
 let inputClickedElement = null;
-getProperties((properties) => hoverTimeout = properties.hoverTime);
 
 function getPageElements() {
     const modalContainer = document.querySelector('.custom-gaze-control-modal');
@@ -34,7 +32,7 @@ function openVirtualKeyboard(element) {
 
 }
 
-function findClosestElementToCursor(customCursor, range) {
+function findClosestElementToCursor(customCursor, cursorRange) {
     const cursorRect = customCursor.getBoundingClientRect();
     const cursorCenterX = (cursorRect.left + cursorRect.right) / 2;
     const cursorCenterY = (cursorRect.top + cursorRect.bottom) / 2;
@@ -54,10 +52,10 @@ function findClosestElementToCursor(customCursor, range) {
     const filteredElements = elements.filter(el => {
         const rect = el.getBoundingClientRect();
         return (
-            rect.left <= cursorCenterX + range &&
-            rect.right >= cursorCenterX - range &&
-            rect.top <= cursorCenterY + range &&
-            rect.bottom >= cursorCenterY - range
+            rect.left <= cursorCenterX + cursorRange &&
+            rect.right >= cursorCenterX - cursorRange &&
+            rect.top <= cursorCenterY + cursorRange &&
+            rect.bottom >= cursorCenterY - cursorRange
         );
     });
 
@@ -91,7 +89,7 @@ function findClosestElementToCursor(customCursor, range) {
 }
 
 document.addEventListener('cursorUpdated', function () {
-    const element = findClosestElementToCursor(customCursor, 50);
+    const element = findClosestElementToCursor(customCursor, cursorRange);
 
     if (element !== previousElement) {
         // Reset previous element border and cancel any existing timer
@@ -115,7 +113,7 @@ document.addEventListener('cursorUpdated', function () {
                 } else {
                     element.click();
                 }
-            }, hoverTimeout);
+            }, hoverTime);
         }
 
         previousElement = element;

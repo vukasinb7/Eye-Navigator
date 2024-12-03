@@ -1,20 +1,3 @@
-function isOverlapping(element1, element2) {
-    const element1Rect = element1.getBoundingClientRect();
-    const element2Rect = element2.getBoundingClientRect();
-
-    const expandedCursorRect = {
-        horizontal: (element1Rect.left + element1Rect.right) * 0.5,
-        vertical: (element1Rect.top + element1Rect.bottom) * 0.5,
-    };
-
-    return (
-        expandedCursorRect.horizontal < element2Rect.right &&
-        expandedCursorRect.horizontal > element2Rect.left &&
-        expandedCursorRect.vertical < element2Rect.bottom &&
-        expandedCursorRect.vertical > element2Rect.top
-    );
-}
-
 function createOverlayContainer() {
     let container = document.createElement('div');
     container.className = 'gaze-overlay-ui-container';
@@ -36,7 +19,7 @@ function createOverlayContainer() {
 
 function createLoadableButton(type, icon, action = () => {
 }, loadingDuration = 3) {
-    let button = document.createElement('div');
+    let button = document.createElement('a');
     button.className = type + '-button';
     button.style.width = '50px';
     button.style.height = '50px';
@@ -88,7 +71,7 @@ function createLoadableButton(type, icon, action = () => {
     };
 
     document.addEventListener('cursorUpdated', function (event) {
-        if (isOverlapping(customCursor, buttonContainer)) {
+        if (findClosestElementToCursor(customCursor,cursorRange) === buttonContainer) {
             if (!isLoading) {
                 loadingFill.style.height = '100%';
                 isLoading = true
@@ -137,7 +120,7 @@ function createNavigationArrowButton(direction) {
     }
 
     document.addEventListener('cursorUpdated', function (event) {
-        if (isOverlapping(customCursor, arrowButton)) {
+        if (findClosestElementToCursor(customCursor, cursorRange) === arrowButton) {
             if (!isScrolling) {
                 isScrolling = true;
                 scrollDelayTimeout = setTimeout(function () {
@@ -155,74 +138,22 @@ function createNavigationArrowButton(direction) {
     return arrowButton;
 }
 
-function createOverlayToggleButton(loadingDuration = 3) {
-    let button = document.createElement('a');
-    button.id = 'custom-gaze-button-toggle';
-    button.className = 'toggle-button';
-    button.style.width = '50px';
-    button.style.height = '50px';
-    button.style.margin = '10px';
-    button.style.backgroundColor = 'rgba(7, 15, 43, 0.8)';
-    button.style.borderRadius = '10px';
-    button.style.overflow = 'hidden';
-    button.style.cursor = 'pointer';
-    button.style.display = 'flex';
-    button.style.alignItems = 'center';
-    button.style.justifyContent = 'center';
-    button.style.color = 'white';
-    button.style.position = 'fixed';
-    button.style.top = '10px';
-    button.style.left = '110px';
-    button.style.zIndex = '100000001';
-    button.innerHTML = '&#9776;';
-
-
-    let loadingFill = document.createElement('div');
-    loadingFill.className = 'loading-fill';
-    loadingFill.style.position = 'absolute';
-    loadingFill.style.bottom = '0';
-    loadingFill.style.left = '0';
-    loadingFill.style.width = '100%';
-    loadingFill.style.height = '0%';
-    loadingFill.style.backgroundColor = 'rgba(0, 128, 0, 0.5)';
-    loadingFill.style.transition = `height ${loadingDuration}s linear`;
-    button.appendChild(loadingFill);
-
-    let timeout;
-    let isLoading = false;
-
-    let resetTransition = function () {
-        loadingFill.style.transition = 'none';
-        loadingFill.style.height = '0%';
-        setTimeout(function () {
-            loadingFill.style.transition = `height ${loadingDuration}s linear`;
-        }, 50);
-    };
-
-    document.addEventListener('cursorUpdated', function (event) {
-        if (isOverlapping(customCursor, button)) {
-            if (!isLoading) {
-                loadingFill.style.height = '100%';
-                isLoading = true
-
-                timeout = setTimeout(function () {
-                    loadingFill.style.height = '0%';
-                    let container = document.querySelector('.gaze-overlay-ui-container');
-                    let isHidden = container.style.display === 'none';
-
-                    toggleButton.style.left = isHidden ? '110px' : '0px';
-                    container.style.display = isHidden ? 'flex' : 'none';
-                    resetTransition();
-                }, loadingDuration * 1000);
-            }
-        } else {
-            clearTimeout(timeout);
-            resetTransition();
-            isLoading = false
-        }
-    });
-
-    return button;
+function createOverlayToggleButton() {
+    let toggleButton = createLoadableButton("toggle", '&#9776;', function () {
+        let container = document.querySelector('.gaze-overlay-ui-container');
+        let isHidden = container.style.display === 'none';
+        toggleButton.style.left = isHidden ? '110px' : '0px';
+        container.style.display = isHidden ? 'flex' : 'none';
+    }, 3);
+    toggleButton.id = 'custom-gaze-button-toggle';
+    toggleButton.style.position = 'fixed';
+    toggleButton.style.width = '70px';
+    toggleButton.style.height = '70px';
+    toggleButton.style.overflow = 'hidden';
+    toggleButton.style.top = '10px';
+    toggleButton.style.left = '110px';
+    toggleButton.style.zIndex = '100000001';
+    return toggleButton;
 }
 
 let overlayContainer = createOverlayContainer();
@@ -232,12 +163,6 @@ let upButton = createNavigationArrowButton('up')
 let leftButton = createNavigationArrowButton('left')
 let rightButton = createNavigationArrowButton('right')
 let downButton = createNavigationArrowButton('down')
-
-let hoverTime;
-getProperties((properties)=>{
-    hoverTime=properties.hoverTime
-})
-
 let homeButton = createLoadableButton('home', homeIconSVG(), (e) => {
     const modal = document.querySelector('.custom-gaze-control-modal');
     modal.classList.toggle('active');
@@ -251,7 +176,7 @@ let forwardButton = createLoadableButton('forward', forwardArrowSVG(), () => {
 let refreshButton = createLoadableButton('refresh', refreshArrowSVG(), () => {
     location.reload()
 },hoverTime);
-let toggleButton = createOverlayToggleButton(hoverTime);
+let toggleButton = createOverlayToggleButton();
 toggleButton.style.display = "none";
 
 overlayContainer.appendChild(homeButton);

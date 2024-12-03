@@ -23,11 +23,14 @@ chrome.storage.local.get('extension_state', (result) => {
 
 chrome.storage.local.get('extension_properties', (result) => {
         const hoverTime = result.extension_properties?.hoverTime || 3000;
+        const cursorRange = result.extension_properties?.cursorRange || 50;
         const screenWidth = result.extension_properties?.screenWidth || 1920;
         const screenHeight = result.extension_properties?.screenHeight || 1080;
 
         let hoverInput=document.getElementById('custom-gaze-hover-time');
         hoverInput.value=hoverTime;
+        let cursorInput=document.getElementById('custom-gaze-cursor-range');
+        cursorInput.value=cursorRange;
         let screenWInput=document.getElementById('custom-gaze-screen-w');
         screenWInput.value=screenWidth;
         let screenHInput=document.getElementById('custom-gaze-screen-h');
@@ -37,11 +40,12 @@ chrome.storage.local.get('extension_properties', (result) => {
 const applyButton=document.getElementById('custom-gaze-apply');
 applyButton.addEventListener('click', (event) => {
      let hoverInput=document.getElementById('custom-gaze-hover-time');
-        let screenWInput=document.getElementById('custom-gaze-screen-w');
-        let screenHInput=document.getElementById('custom-gaze-screen-h');
-
+     let cursorInput=document.getElementById('custom-gaze-cursor-range');
+     let screenWInput=document.getElementById('custom-gaze-screen-w');
+     let screenHInput=document.getElementById('custom-gaze-screen-h');
      chrome.storage.local.set({extension_properties:{
             hoverTime:hoverInput.value,
+            cursorRange:cursorInput.value,
             screenWidth:screenWInput.value,
             screenHeight:screenHInput.value
         }}, () => {chrome.runtime.reload();});

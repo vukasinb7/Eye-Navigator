@@ -9,26 +9,42 @@
 <body>
   <h2>Eye Navigator</h2>
   <div class="power-container">
-  <input type="checkbox" id="custom-gaze-switch" /><label for="custom-gaze-switch">Toggle</label>
+    <input type="checkbox" id="custom-gaze-switch" />
+    <label for="custom-gaze-switch">Toggle</label>
   </div>
 
   <button id="calibrateGaze">Calibrate Gaze Control</button>
-  <h3 style="margin-top:25px;">Properties</h3>
+  <h3 >Properties</h3>
   <div class="properties-container">
-    <p>Screen Resolution</p>
     <div class="resolution-container">
-      <input type="number" id="custom-gaze-screen-w"/>
+      <div class="input-group">
+        <p>Screen Width</p>
+        <input type="number" id="custom-gaze-screen-w" />
+      </div>
       <p>x</p>
-      <input type="number" id="custom-gaze-screen-h"/>
+      <div class="input-group">
+        <p>Screen Height</p>
+        <input type="number" id="custom-gaze-screen-h" />
+      </div>
     </div>
-    <p style="margin-top:10px;">Click Timeout</p>
-    <div class="resolution-container">
-      <input type="number" id="custom-gaze-hover-time"/>
-      <p>ms</p>
+    <div class="timeout-range-container">
+      <div class="input-group">
+        <p>Click Timeout</p>
+        <div>
+          <input type="number" id="custom-gaze-hover-time" />
+          <p>ms</p>
+        </div>
+      </div>
+      <div class="input-group">
+        <p>Cursor Range</p>
+        <div>
+          <input type="number" id="custom-gaze-cursor-range" />
+          <p>px</p>
+        </div>
+      </div>
     </div>
   </div>
   <button id="custom-gaze-apply">Apply</button>
-
 
   <script src="popup.js"></script>
 </body>

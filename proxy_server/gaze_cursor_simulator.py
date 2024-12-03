@@ -3,7 +3,7 @@ import time
 from pynput import mouse
 
 fpox, fpoy = 0.5, 0.5
-screen_width, screen_height = 1920, 1080
+screen_width, screen_height = 2560, 1080
 
 
 def on_move(x, y):

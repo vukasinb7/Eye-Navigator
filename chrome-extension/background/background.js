@@ -128,15 +128,15 @@ function sendDisableCommand() {
 
 chrome.runtime.onMessage.addListener(function (message) {
     if (message.type === 'enableGaze') {
-        sendEnableCommand();
         chrome.storage.local.set({extension_state: "enabled"}, () => {
             console.log('Extension state set to enabled');
         });
+        sendEnableCommand();
     } else if (message.type === 'disableGaze') {
-        sendDisableCommand();
         chrome.storage.local.set({extension_state: "disabled"}, () => {
             console.log('Extension state set to disabled');
         });
+        sendDisableCommand();
     } else if (message.type === 'calibrateGaze') {
         sendCalibrateCommand();
     }

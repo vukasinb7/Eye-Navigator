@@ -27,6 +27,7 @@ function parseAndUpdateCursor(xmlData) {
 // Update the cursor's position based on the gaze coordinates
 function updateCursorPosition(x, y) {
     const customCursor = document.getElementById('gaze-cursor');
+    console.log(window.innerWidth);
     let cursorX = x * window.innerWidth
     let cursorY = y * window.innerHeight
     if (customCursor) {
@@ -37,3 +38,13 @@ function updateCursorPosition(x, y) {
     const cursorUpdatedEvent = new CustomEvent('cursorUpdated', {});
     document.dispatchEvent(cursorUpdatedEvent);
 }
+
+// Listen for the message from the background script
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === 'gazeData') {
+        const xmlData = message.payload;
+        parseAndUpdateCursor(xmlData);
+    } else {
+        console.log(message);
+    }
+});

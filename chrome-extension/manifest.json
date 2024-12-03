@@ -12,9 +12,7 @@
   ],
   "host_permissions": [
     "http://*/*",
-    "https://*/*",
-    "chrome://*/*",
-    "chrome-extension://*/*"
+    "https://*/*"
   ],
   "background": {
     "service_worker": "background/background.js"
@@ -25,14 +23,13 @@
         "<all_urls>"
       ],
       "js": [
-        "content/constants.js",
+        "content/config.js",
         "content/svgs.js",
         "content/cursor.js",
         "content/home.js",
-        "content/overlay.js",
         "content/element_selection.js",
-        "content/keyboard.js",
-        "content/content.js"
+        "content/overlay.js",
+        "content/keyboard.js"
       ],
      "css": ["content/style.css"]
     }
