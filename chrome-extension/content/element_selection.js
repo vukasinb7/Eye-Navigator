@@ -1,19 +1,38 @@
 let previousElement = null;
 let hoverTimer = null;
-let hoverTimeout=null;
-getProperties((properties)=>hoverTimeout=properties.hoverTime);
+let hoverTimeout = null;
+let inputClickedElement = null;
+getProperties((properties) => hoverTimeout = properties.hoverTime);
 
 function getPageElements() {
-        const modalContainer = document.querySelector('.custom-gaze-control-modal');
-        if (modalContainer && modalContainer.classList.contains('active')){
-            let elements=Array.from(modalContainer.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
-            const overlay= Array.from(document.querySelectorAll('.gaze-overlay-ui-container a'));
-            Array.prototype.push.apply(elements, overlay);
-            elements.push(document.querySelector('#custom-gaze-button-toggle'));
-            return elements;
-        }
-        return Array.from(document.querySelectorAll('a, button, input[type="button"], input[type="submit"], [onclick]'));
+    const modalContainer = document.querySelector('.custom-gaze-control-modal');
+    const keyboardContainer = document.querySelector('.custom-gaze-control-keyboard-modal');
+    if (keyboardContainer && keyboardContainer.classList.contains('active')) {
+        return Array.from(keyboardContainer.querySelectorAll('a, button, [onclick]'));
     }
+    if (modalContainer && modalContainer.classList.contains('active')) {
+        let elements = Array.from(modalContainer.querySelectorAll('a, button, input, [onclick], textarea'));
+        const overlay = Array.from(document.querySelectorAll('.gaze-overlay-ui-container a'));
+        Array.prototype.push.apply(elements, overlay);
+        elements.push(document.querySelector('#custom-gaze-button-toggle'));
+        return elements;
+    }
+    return Array.from(document.querySelectorAll('a, button, input, [onclick],textarea'));
+}
+
+function shouldShowVirtualKeyboard(element) {
+    return (element.tagName.toLowerCase() === 'input' &&
+        !['checkbox', 'radio', 'button', 'submit', 'reset'].includes(element.type)) || element.tagName.toLowerCase() === 'textarea';
+
+}
+
+function openVirtualKeyboard(element) {
+    const modal = document.querySelector('.custom-gaze-control-keyboard-modal');
+    modal.classList.add('active');
+    inputClickedElement = element;
+    document.querySelector('.custom-gaze-keyboard .custom-gaze-input').value = element.value;
+
+}
 
 function findClosestElementToCursor(customCursor, range) {
     const cursorRect = customCursor.getBoundingClientRect();
@@ -91,7 +110,11 @@ document.addEventListener('cursorUpdated', function () {
         // Set a new hover timer for the current element
         if (element) {
             hoverTimer = setTimeout(() => {
-                element.click();
+                if (shouldShowVirtualKeyboard(element)) {
+                    openVirtualKeyboard(element);
+                } else {
+                    element.click();
+                }
             }, hoverTimeout);
         }
 

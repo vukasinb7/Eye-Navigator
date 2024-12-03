@@ -31,6 +31,7 @@
         "content/home.js",
         "content/overlay.js",
         "content/element_selection.js",
+        "content/keyboard.js",
         "content/content.js"
       ],
      "css": ["content/style.css"]

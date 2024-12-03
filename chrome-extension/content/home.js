@@ -5,9 +5,9 @@ const modalHtml = `
     <div class="gaze-control-search-container">
         <div class="gaze-control-wrap">
             <div class="gaze-control-search">
-                <input type="text" class="gaze-control-searchTerm" placeholder="Search...">
+                <input id="gaze-control-home-input" type="text" class="gaze-control-searchTerm" placeholder="Search...">
                 <div style="width: 50px;"></div>
-                <button type="submit" class="gaze-control-searchButton">
+                <button type="submit" id="gaze-control-searchButton" class="gaze-control-searchButton">
                 ${searchSVG()}
                   
                 </button>
@@ -158,9 +158,20 @@ function switchMode() {
     }
 }
 
+function search() {
+    const query = document.querySelector("#gaze-control-home-input").value;
+    if (query !== '') {
+        const url = 'http://www.google.com/search?q=' + encodeURIComponent(query);
+        const modal = document.querySelector('.custom-gaze-control-modal');
+        modal.classList.toggle('active');
+        location.href=url;
+    }
+}
+
 
 document.body.insertAdjacentHTML('beforeend', modalHtml);
 document.getElementById('add-bookmark-button-link').addEventListener('click', addCurrentPageToBookmarks);
 document.getElementById('custom-gaze-edit-bookmark-button').addEventListener('click', switchMode);
+document.getElementById('gaze-control-searchButton').addEventListener('click', search);
 loadBookmarks();
 
