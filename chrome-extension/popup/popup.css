@@ -103,6 +103,9 @@ p {
     align-items: center;
     width: 100%;
 }
+.resolution-container{
+    align-items: end;
+}
 
 .resolution-container input[type="number"], .timeout-range-container input[type="number"] {
     width: 60%;
