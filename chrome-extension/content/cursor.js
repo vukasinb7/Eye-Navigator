@@ -27,7 +27,6 @@ function parseAndUpdateCursor(xmlData) {
 // Update the cursor's position based on the gaze coordinates
 function updateCursorPosition(x, y) {
     const customCursor = document.getElementById('gaze-cursor');
-    console.log(window.innerWidth);
     let cursorX = x * window.innerWidth
     let cursorY = y * window.innerHeight
     if (customCursor) {

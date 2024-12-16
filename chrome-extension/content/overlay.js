@@ -79,6 +79,7 @@ function createLoadableButton(type, icon, action = () => {
                 timeout = setTimeout(function () {
                     loadingFill.style.height = '0%';
                     action();
+                    customCursor.classList.remove('active', 'loading');
                     resetTransition();
                 }, loadingDuration * 1000);
             }
