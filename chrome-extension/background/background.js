@@ -2,8 +2,15 @@ const ip = '127.0.0.1';
 const port = 5050;
 const address = `ws://${ip}:${port}`;
 let socket;
-let windowWidth = 2560
-let windowHeight = 1080
+let windowWidth=1920;
+let windowHeight=1080;
+
+chrome.storage.local.get('extension_properties', (result) => {
+        const screenWidth = result.extension_properties?.screenWidth || 1920;
+        const screenHeight = result.extension_properties?.screenHeight || 1080;
+        windowWidth=screenWidth;
+        windowHeight=screenHeight;
+    });
 
 function connectWebSocket() {
     socket = new WebSocket(address);
@@ -11,10 +18,6 @@ function connectWebSocket() {
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket server');
         sendEnableCommand();
-        // chrome.windows.getCurrent((window) => {
-        //     const windowId = window.id;
-        //     chrome.windows.update(windowId, {state: "fullscreen"});
-        // });
     });
 
     socket.addEventListener('message', (event) => {
@@ -42,7 +45,6 @@ function connectWebSocket() {
                 } else if (xmlData.includes('"CALIB_RESULT"')) {
                     console.log('Calibration result received, stopping calibration display');
                     socket.send(new TextEncoder().encode('<SET ID="CALIBRATE_SHOW" STATE="0" />\r\n'));
-                    sendEnableCommand()
                 }
             };
             reader.onerror = function (error) {
@@ -126,29 +128,20 @@ function sendDisableCommand() {
 
 chrome.runtime.onMessage.addListener(function (message) {
     if (message.type === 'enableGaze') {
+        chrome.storage.local.set({extension_state: "enabled"}, () => {
+            console.log('Extension state set to enabled');
+        });
         sendEnableCommand();
-        chrome.storage.local.set({extension_state: "enabled"}, () => {console.log('Extension state set to enabled');});
     } else if (message.type === 'disableGaze') {
+        chrome.storage.local.set({extension_state: "disabled"}, () => {
+            console.log('Extension state set to disabled');
+        });
         sendDisableCommand();
-        chrome.storage.local.set({extension_state: "disabled"}, () => {console.log('Extension state set to disabled');});
     } else if (message.type === 'calibrateGaze') {
         sendCalibrateCommand();
     }
     return true;
 });
 
-function navigateToLocalPage() {
-    const localUrl = chrome.runtime.getURL("favourites/favorites_page.html");
-
-    // Query for the active tab in the current window
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-        if (tabs.length > 0) {
-            const tabId = tabs[0].id;
-            chrome.tabs.update(tabId, {url: localUrl});
-        }
-    });
-}
-
 
 connectWebSocket();
-navigateToLocalPage();

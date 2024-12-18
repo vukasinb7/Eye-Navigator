@@ -3,16 +3,6 @@ const customCursor = document.createElement('div');
 customCursor.id = 'gaze-cursor';
 document.body.appendChild(customCursor);
 
-customCursor.style.position = 'fixed';
-customCursor.style.width = '15px';
-customCursor.style.height = '15px';
-customCursor.style.backgroundColor = 'red';
-customCursor.style.borderRadius = '50%';
-customCursor.style.pointerEvents = 'none';
-customCursor.style.zIndex = '100000002';
-customCursor.style.display = "none";
-
-
 // Parse the XML message and update the cursor position
 function parseAndUpdateCursor(xmlData) {
   try {
@@ -47,3 +37,13 @@ function updateCursorPosition(x, y) {
     const cursorUpdatedEvent = new CustomEvent('cursorUpdated', {});
     document.dispatchEvent(cursorUpdatedEvent);
 }
+
+// Listen for the message from the background script
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === 'gazeData') {
+        const xmlData = message.payload;
+        parseAndUpdateCursor(xmlData);
+    } else {
+        console.log(message);
+    }
+});

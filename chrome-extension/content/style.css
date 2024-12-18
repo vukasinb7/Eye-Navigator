@@ -1,0 +1,294 @@
+#gaze-cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100000002;
+    display: none;
+    transition: transform 0.2s ease;
+}
+
+#gaze-cursor.active {
+    display: block;
+    transform: scale(1.5);
+}
+
+#gaze-cursor::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 35px;
+    height: 35px;
+    border: 2px solid transparent;
+    border-top-color: blue;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: none;
+    display: none;
+}
+
+#gaze-cursor.loading::after {
+    display: block;
+    animation: loading-ring 1s linear infinite;
+}
+
+@keyframes loading-ring {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.custom-gaze-control-modal,.custom-gaze-control-keyboard-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    margin-top: 0;
+    padding-top: 70px;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(7, 15, 43, 0.85);
+    backdrop-filter: blur(10px);
+}
+.custom-gaze-control-modal {
+    z-index: 100000000;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s, visibility 0s 0.5s;
+}
+.custom-gaze-control-keyboard-modal {
+    z-index: 100000001;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s, visibility 0s 0.5s;
+}
+.custom-gaze-control-modal.active,.custom-gaze-control-keyboard-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s;
+}
+#add-bookmark-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 140px;
+    height: 140px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    margin: 25px;
+}
+#add-bookmark-button p {
+    margin: 0;
+    text-align: center;
+    font-size: 20px;
+}
+.gaze-control-container {
+    width: 80%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.gaze-control-fav-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-style: italic;
+    width: 140px;
+    height: 140px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    margin: 25px;
+}
+
+.gaze-control-fav-card p {
+    margin-top: 5px;
+    color: black;
+    text-align: center;
+    font-size: 16px !important;
+}
+
+.gaze-control-fav-card img {
+    margin-top: 5px;
+    width: 60px;
+    height: 60px;
+}
+
+.gaze-control-search {
+    width: 100%;
+    min-width: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gaze-control-search input {
+    font-size: 40px;
+    height: 100%;
+}
+
+.gaze-control-searchTerm {
+    width: 100%;
+    border: 3px solid #9290C3;
+    border-radius: 5px;
+    outline: none;
+    color: #9290C3;
+
+}
+.gaze-control-searchTerm:focus {
+    color: #9290C3;
+}
+.gaze-control-searchButton {
+    width: 66px;
+    min-width: 66px;
+    height: 66px;
+    border: 1px solid #9290C3;
+    background: #9290C3;
+    text-align: center;
+    color: #fff;
+    border-radius: 100px;
+    cursor: pointer;
+    font-size: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gaze-control-wrap {
+    width: 70%;
+}
+
+.gaze-control-grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.gaze-control-grid-container-wrapper {
+
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.gaze-control-search-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#custom-gaze-edit-bookmark-button {
+    margin-top: 50px;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    color: black;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid transparent;
+}
+
+#custom-gaze-edit-bookmark-button p {
+    margin: 0;
+    margin-left: 10px;
+    font-size: 20px;
+
+}
+
+.custom-gaze-keyboard {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    color: black!important;
+}
+
+.custom-gaze-keyboard .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.custom-gaze-keyboard .single-button {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    margin: 20px;
+    border-radius: 15px;
+    color: black!important;
+    text-decoration: none!important;
+
+}
+
+.custom-gaze-keyboard .double-button {
+    width: 240px;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    margin: 20px;
+    border-radius: 15px;
+    color: black!important;
+    text-decoration: none!important;
+
+
+}
+.custom-gaze-keyboard .space {
+    width: 600px;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    margin: 20px;
+    border-radius: 15px;
+}
+.custom-gaze-keyboard .custom-gaze-input {
+    width: 80vw;
+    font-size: 80px;
+    margin-bottom: 30px;
+    background-color: white !important;
+    color: black !important;
+}
+.custom-gaze-keyboard-caps-lock-on{
+    display: none;
+    width: 60px;
+    height: 60px;
+}
+.custom-gaze-keyboard-caps-lock-off{
+    display: flex;
+    width: 60px;
+    height: 60px;
+}
+.custom-gaze-keyboard-caps-lock-on:hover,.custom-gaze-keyboard-caps-lock-off:hover{
+    text-decoration: none;
+}

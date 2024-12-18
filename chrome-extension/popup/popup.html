@@ -7,10 +7,44 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <h3>Eye Navigator</h3>
+  <h2>Eye Navigator</h2>
+  <div class="power-container">
+    <input type="checkbox" id="custom-gaze-switch" />
+    <label for="custom-gaze-switch">Toggle</label>
+  </div>
+
   <button id="calibrateGaze">Calibrate Gaze Control</button>
-  <button id="enableGaze">Enable Gaze Control</button>
-  <button id="disableGaze">Disable Gaze Control</button>
+  <h3 >Properties</h3>
+  <div class="properties-container">
+    <div class="resolution-container">
+      <div class="input-group">
+        <p>Screen Width</p>
+        <input type="number" id="custom-gaze-screen-w" />
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0,0,256,256"><g fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(8.53333,8.53333)"><path d="M7,4c-0.25587,0 -0.51203,0.09747 -0.70703,0.29297l-2,2c-0.391,0.391 -0.391,1.02406 0,1.41406l7.29297,7.29297l-7.29297,7.29297c-0.391,0.391 -0.391,1.02406 0,1.41406l2,2c0.391,0.391 1.02406,0.391 1.41406,0l7.29297,-7.29297l7.29297,7.29297c0.39,0.391 1.02406,0.391 1.41406,0l2,-2c0.391,-0.391 0.391,-1.02406 0,-1.41406l-7.29297,-7.29297l7.29297,-7.29297c0.391,-0.39 0.391,-1.02406 0,-1.41406l-2,-2c-0.391,-0.391 -1.02406,-0.391 -1.41406,0l-7.29297,7.29297l-7.29297,-7.29297c-0.1955,-0.1955 -0.45116,-0.29297 -0.70703,-0.29297z"></path></g></g></svg>
+      <div class="input-group">
+        <p>Screen Height</p>
+        <input type="number" id="custom-gaze-screen-h" />
+      </div>
+    </div>
+    <div class="timeout-range-container" style="display:flex;justify-content:center;align-items:center;flex-direction:column">
+      <div class="input-group" style="display:flex;justify-content:start;align-items:center;flex-direction:row">
+        <p style="width:100px;">Click Timeout</p>
+        <div style="display:flex;justify-content:start;align-items:center;flex-direction:row">
+          <input type="number" id="custom-gaze-hover-time" />
+          <p>ms</p>
+        </div>
+      </div>
+      <div class="input-group" style="display:flex;justify-content:start;align-items:center;flex-direction:row">
+        <p style="width:100px;">Cursor Range</p>
+        <div style="display:flex;justify-content:start;align-items:center;flex-direction:row">
+          <input type="number" id="custom-gaze-cursor-range" />
+          <p>px</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="custom-gaze-apply">Apply</button>
 
   <script src="popup.js"></script>
 </body>
